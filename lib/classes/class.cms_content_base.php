@@ -198,7 +198,7 @@ class CmsContentBase extends CmsObjectRelationalMapping
 			CmsContentOperations::do_cross_reference($this->id, 'content', $concat);
 		
 		CmsEvents::send_event('Core', 'ContentEditPost', array('content' => &$this));
-		CmsCache::clean();
+		CmsCache::clear();
 	}
 	
 	function validate()
@@ -558,7 +558,7 @@ class CmsContentBase extends CmsObjectRelationalMapping
 		CmsContentOperations::remove_cross_references($this->id, 'content');
 		
 		CmsEvents::SendEvent('Core', 'ContentDeletePost', array('content' => &$this));
-		CmsCache::get_instance()->clear();
+		CmsCache::clear();
 	}
 	
 	function template_name()
