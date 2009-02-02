@@ -53,17 +53,27 @@ class PageTemplateController extends AdminController
 		}
 
 		$template = orm('cms_template')->find_by_id($params['id']);
-
-		if ($params['submit'])
+		if ($params['submit'] || $params['apply'])
 		{
 			$template->update_parameters($params['template']);
 			if ($template->save())
 			{
 				$this->flash = 'Template Updated';
-				SilkResponse::redirect_to_action(array('controller' => 'page_template', 'action' => 'index'));
+				if (!$params['is_silk_ajax'])
+				{
+					SilkResponse::redirect_to_action(array('controller' => 'page_template', 'action' => 'index'));
+				}
 			}
 		}
+		
 		$this->set('template', $template);
+		
+		if ($params['is_silk_ajax'])
+		{
+			$ajax = new SilkAjax();
+			$ajax->replace_html('#pagecontent', $this->render_partial('editform.tpl'));
+			return $ajax->get_result();
+		}
 	}
 	
 	function delete($params)

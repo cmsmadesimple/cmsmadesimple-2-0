@@ -17,6 +17,7 @@
 	<script type="text/javascript" src="{$silk_lib_root_url}/jquery/jquery.js"></script>
 	<script type="text/javascript" src="{$silk_lib_root_url}/jquery/jquery.color.js"></script>
 	<script type="text/javascript" src="{$silk_lib_root_url}/jquery/jquery.jcontext.1.0.js"></script>
+	<script type="text/javascript" src="{$silk_lib_root_url}/jquery/jquery.silk.js"></script>
 	<script type="text/javascript" src="{$silk_lib_root_url}/jquery/ui/ui.tabs.js"></script>
 	<script type="text/javascript" src="{$silk_lib_root_url}/jquery/ui/ui.accordion.js"></script>
 	<script type="text/javascript" src="{$silk_lib_root_url}/jquery/ui/ui.mouse.js"></script>
@@ -77,11 +78,22 @@
 		{include file="$layout_root_path/topmenu.tpl"}
 
 		<div id="MainContent">
-			<div class="pagecontainer">
+		
+			{*
+			<div class="pagemcontainer">
+				<p class="pagemessage" id="pagemessage">
+					{php}echo SilkFlash::get_instance()->get('std'){/php}
+				</p>
+			</div>
+			*}
+			
+			<div class="pagecontainer" id="pagecontent">
 				{$content}
 			</div>
+			
 			<div class="clearb"></div>
 			<div id="HelpContent"></div>
+		
 		</div><!-- end MainContent -->
 
 		<div id="footer">
