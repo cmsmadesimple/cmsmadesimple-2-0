@@ -30,23 +30,14 @@ class CmsTemplate extends SilkObjectRelationalMapping
 	
 	public function setup()
 	{
-		//$this->create_has_many_association('stylesheet_associations', 'template_stylesheet_association', 'template_id', array('order' => 'order_num ASC'));
-		//$this->create_has_and_belongs_to_many_association('stylesheets', 'stylesheet', 'stylesheet_template_assoc', 'stylesheet_id', 'template_id', array('order' => 'order_num ASC'));
-		//$this->create_has_and_belongs_to_many_association('active_stylesheets', 'stylesheet', 'stylesheet_template_assoc', 'stylesheet_id', 'template_id', array('order' => 'order_num ASC', 'conditions' => 'stylesheets.active = 1'));
+		$this->create_has_many_association('stylesheet_associations', 'cms_template_stylesheet_association', 'template_id', array('order' => 'order_num ASC'));
+		$this->create_has_and_belongs_to_many_association('stylesheets', 'cms_stylesheet', 'stylesheet_template_assoc', 'stylesheet_id', 'template_id', array('order' => 'order_num ASC'));
+		$this->create_has_and_belongs_to_many_association('active_stylesheets', 'cms_stylesheet', 'stylesheet_template_assoc', 'stylesheet_id', 'template_id', array('order' => 'order_num ASC', 'conditions' => 'stylesheets.active = 1'));
 	}
 	
 	function usage_count()
 	{
-		$templateops = cmsms()->GetTemplateOperations();
-		if ($this->id > -1)
-			return $templateops->UsageCount($this->id);
-		else
-			return 0;
-	}
-	
-	function UsageCount()
-	{
-		return $this->usage_count();
+		return orm('CmsTemplateAssociation')->find_count_by_template_id($this->id);
 	}
 	
 	function validate()
@@ -66,7 +57,6 @@ class CmsTemplate extends SilkObjectRelationalMapping
 		}
 	}
 	
-	/*
 	public function get_stylesheet_media_types($show_inactive = false)
 	{
 		$result = array();
@@ -82,9 +72,7 @@ class CmsTemplate extends SilkObjectRelationalMapping
 
 		return $result;
 	}
-	*/
 	
-	/*
 	public function assign_stylesheet_by_id($stylesheet_id)
 	{
 		$exists = false;
@@ -106,9 +94,7 @@ class CmsTemplate extends SilkObjectRelationalMapping
 			$new_assoc->save();
 		}
 	}
-	*/
 	
-	/*
 	public function remove_assigned_stylesheet_by_id($stylesheet_id)
 	{
 		$cur_stylesheets = $this->stylesheet_associations;
@@ -121,13 +107,12 @@ class CmsTemplate extends SilkObjectRelationalMapping
 			}
 		}
 	}
-	*/
 	
 	//Callback handlers
 	function before_save()
 	{
 		//Make sure we have a default template set or we'll probably break stuff down the road
-		if (orm('cms_template')->find_count_by_default_template(1) == 0)
+		if (orm('CmsTemplate')->find_count_by_default_template(1) == 0)
 		{
 			$this->default_template = 1;
 		}

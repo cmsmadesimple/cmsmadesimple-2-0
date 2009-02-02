@@ -1,28 +1,36 @@
-<div>
-	{link text="Add Template" controller="page_template" action="add"}
+<div class="pageoverflow">
+	<div class="pageheader">Page Templates
+		<span class="helptext">
+			<a href="http://wiki.cmsmadesimple.org/index.php/User_Handbook/Admin_Panel/Layout/Templates" rel="external">
+				<img src="{$layout_root_url}/images/icons/system/info-external.gif" class="systemicon" alt="Help" title="Help" />
+			</a>
+			<a href="http://wiki.cmsmadesimple.org/index.php/User_Handbook/Admin_Panel/Layout/Templates" rel="external">Help</a> (new window)
+		</span>
+	</div>
 </div>
 
-<table>
+<table cellspacing="0" class="pagetable">
 	<thead>
 		<tr>
-			<th>Name</th>
-			<th>Active</th>
-			<th></th>
-			<th></th>
+			<th class="pagew50">Template</th>
+			<th class="pagepos">Default</th>
+			<th class="pagepos">Active</th>
+			<th class="pageicon">&nbsp;</th>
+			<th class="pageicon">&nbsp;</th>
 		</tr>
 	</thead>
-	<tbody>
-	{foreach from=$templates item='template'}
-		<tr>
-			<td>{$template.name}</td>
-			<td>{if $template.active}True{else}False{/if}</td>
-			<td>{link text='Edit' controller='page_template' action='edit' id=$template.id}</td>
-			<td>{link text='Delete' controller='page_template' action='delete' id=$template.id confirm_text='Are you sure you want to delete?'}</td>
-		</tr>
-	{/foreach}
+	<tbody id="tablebody">
+		{render_partial template='indextablebody.tpl'}
 	</tbody>
 </table>
 
-<div>
-	{link text="Add Template" controller="page_template" action="add"}
+<div class="pageoptions">
+	<p class="pageoptions">
+		<span style="float: left;">
+			<a href="{link only_href='true' controller='page_template' action='add'}"><img src="{$layout_root_url}/images/icons/system/newobject.gif" class="systemicon" alt="Add New Template" title="Add New Template" /></a>
+			{link html_class="pageoptions" text="Add Template" controller="page_template" action="add"}
+		</span>
+	</p>
 </div>
+
+<br />

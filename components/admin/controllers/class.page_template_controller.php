@@ -16,11 +16,11 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-class PageTemplateController extends SilkControllerBase
+class PageTemplateController extends AdminController
 {
 	function index($params)
 	{
-		$templates = orm('cms_template')->find_all();
+		$templates = orm('CmsTemplate')->find_all();
 		$this->set('templates', $templates);
 	}
 	
@@ -68,7 +68,7 @@ class PageTemplateController extends SilkControllerBase
 	
 	function delete($params)
 	{
-		$this->flash = orm('cms_template')->delete($params['id']) ? 'Template Deleted' : 'There was an error deleteing the template';
+		$this->flash = orm('CmsTemplate')->delete($params['id']) ? 'Template Deleted' : 'There was an error deleteing the template';
 		SilkResponse::redirect_to_action(array('controller' => 'page_template', 'action' => 'index'));
 	}
 }
