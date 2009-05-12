@@ -28,6 +28,8 @@ class CmsTemplate extends SilkObjectRelationalMapping
 	var $field_maps = array('template_name' => 'name', 'default_template' => 'default', 'template_content' => 'content');
 	var $table = 'templates';
 	
+	var $blocks = array();
+	
 	public function setup()
 	{
 		$this->create_has_many_association('stylesheet_associations', 'cms_template_stylesheet_association', 'template_id', array('order' => 'order_num ASC'));
@@ -106,6 +108,50 @@ class CmsTemplate extends SilkObjectRelationalMapping
 				break;
 			}
 		}
+	}
+	
+	public function get_page_blocks()
+	{
+		$smarty = smarty();
+		
+		$this->blocks = array();
+		
+		$old_function = $smarty->_plugins['function']['content'];
+		$smarty->register_function('content', array($this, 'parse_block_callback'));
+		
+		$smarty->_compile_source('temporary template', $this->content, $_compiled);
+		@ob_start();
+		$smarty->_eval('?>' . $_compiled);
+		$_contents = @ob_get_contents();
+		@ob_end_clean();
+		
+		$smarty->unregister_function('content');
+		$smarty->_plugins['function']['content'] = $old_function;
+		
+		return $this->blocks;
+	}
+	
+	public function parse_block_callback($params, &$smarty)
+	{
+		$name = 'default';
+		if (isset($params['block']))
+		{
+			$name = $params['block'];
+			unset($params['block']);
+		}
+		
+		if (!isset($params['type']))
+		{
+			$params['type'] = 'CmsHtmlContentType';
+		}
+		
+		$this->blocks[$name] = $params;
+	}
+	
+	function process()
+	{
+		$smarty = smarty();
+		return $smarty->fetch('template:' . $this->id);
 	}
 	
 	//Callback handlers

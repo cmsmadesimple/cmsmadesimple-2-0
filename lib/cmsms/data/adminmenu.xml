@@ -39,7 +39,7 @@
 			<node>
 				<name>pages</name>
 				<title>pages</title>
-				<url>listcontent.php</url>
+				<url>page/index</url>
 				<description>pagesdescription</description>
 				<show_in_menu>
 					<permission>pagePerms</permission>

@@ -23,10 +23,6 @@
  *
  * @author Ted Kulp
  * @since 2.0
- * @version $Revision$
- * @modifiedby $LastChangedBy$
- * @lastmodified $Date$
- * @license GPL
  **/
 class CmsRoute extends SilkObject
 {
@@ -39,80 +35,56 @@ class CmsRoute extends SilkObject
 		parent::__construct();
 	}
 	
+	/*
 	public static function run($params, $page)
 	{
-		var_dump($params, $page);
+		$page_obj = SilkCache::get_instance()->call('CmsRoute::match_route', $page);
+		if ($page_obj)
+		{
+			echo SilkCache::get_instance()->call(array($page_obj, 'display'));
+		}
+		
+		//TODO: Remove me
+		echo SilkProfiler::get_instance()->report();
+	}
+	*/
+	
+	public static function run($params, $page)
+	{
+		CmsModuleLoader::load_module_data();
+		
+		echo SilkCache::get_instance()->call('CmsRoute::_run', $params, $page);
+		
+		//TODO: Remove me
+		echo SilkProfiler::get_instance()->report();
+	}
+	
+	public static function _run($params, $page)
+	{
+		$page_obj = CmsRoute::match_route($page);
+		if ($page_obj)
+		{
+			return $page_obj->display();
+		}
+		
+		return '';
 	}
 	
 	public static function match_route($page)
-	{	
-		if (strpos($page, '/') !== FALSE)
+	{
+		$page_obj = null;
+		
+		if ($page == '' || $page == '/')
+			$page_obj = orm('CmsPage')->find_by_default_page(true);
+		else
+			$page_obj = orm('CmsPage')->find_by_hierarchy_path($page);
+		
+		if ($page_obj == null)
 		{
-			$routes =& cmsms()->variables['routes'];
-
-			$matched = false;
-			foreach ($routes as $route)
-			{
-				$matches = array();
-				if (preg_match($route->regex, $page, $matches))
-				{
-					//Now setup some assumptions
-					if (!isset($matches['id']))
-						$matches['id'] = 'cntnt01';
-					if (!isset($matches['action']))
-						$matches['action'] = 'defaulturl';
-					if (!isset($matches['inline']))
-						$matches['inline'] = 0;
-					if (!isset($matches['returnid']))
-						$matches['returnid'] = ''; #Look for default page
-					if (!isset($matches['module']))
-						$matches['module'] = $route->module;
-
-					//Get rid of numeric matches
-					foreach ($matches as $key=>$val)
-					{
-						if (is_int($key))
-						{
-							unset($matches[$key]);
-						}
-						else
-						{
-							if ($key != 'id')
-								$_REQUEST[$matches['id'] . $key] = $val;
-						}
-					}
-
-					//Now set any defaults that might not have been in the url
-					if (isset($route->defaults) && count($route->defaults) > 0)
-					{
-						foreach ($route->defaults as $key=>$val)
-						{
-							$_REQUEST[$matches['id'] . $key] = $val;
-						}
-					}
-
-					//Get a decent returnid
-					if ($matches['returnid'] == '')
-					{
-						$matches['returnid'] = CmsContentOperations::get_default_page_id();
-					}
-
-					$_REQUEST['mact'] = $matches['module'] . ',' . $matches['id'] . ',' . $matches['action'] . ',' . $matches['inline'];
-					$_REQUEST[$matches['id'] . 'returnid'] = $matches['returnid'];
-					$page = $matches['returnid'];
-					$smarty->id = $matches['id'];
-
-					$matched = true;
-				}
-			}
-
-			if (!$matched)
-			{
-				$page = substr($page, strrpos($page, '/') + 1);
-			}
+			var_dump('404 here');
 		}
-
-		return $page;
+	
+		return $page_obj;
 	}
 }
 
