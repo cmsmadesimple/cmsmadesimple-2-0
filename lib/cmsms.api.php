@@ -50,7 +50,7 @@ require_once(cms_join_path(ROOT_DIR, 'lib', 'page.functions.php'));
 require_once(cms_join_path(ROOT_DIR, 'lib', 'content.functions.php'));
 
 
-//set_error_handler('cms_warning_handler', E_WARNING | E_USER_WARNING);
+set_error_handler('cms_warning_handler', E_WARNING | E_USER_WARNING);
 
 /**
  * The one and only autoload function for the system.  This basically allows us 
