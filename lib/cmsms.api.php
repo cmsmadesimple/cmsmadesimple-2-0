@@ -59,6 +59,14 @@ set_error_handler('cms_warning_handler', E_WARNING | E_USER_WARNING);
  */
 function cms_autoload($class_name)
 {
+	//Hack in the smarty loading
+	$_class = strtolower($class_name);
+	if (substr($_class, 0, 16) === 'smarty_internal_' || $_class == 'smarty_security')
+	{
+		include cms_join_path(ROOT_DIR, 'lib', 'smarty', 'sysplugins', $_class . '.php');
+		return;
+	}
+	
 	$files = scan_classes();
 	//$files = CmsCache::get_instance()->call('scan_classes');
 	
