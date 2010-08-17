@@ -489,6 +489,19 @@ class CmsPage extends CmsObjectRelationalMapping
 		audit($this->id,$this->name(),'Deleted Content');
 	}
 	
+	protected function instantiate_class($type, $row)
+	{
+		$ret = null;
+		
+		if (isset($row['page_type']) && $row['page_type'] != '')
+			$ret = CmsPageType::get_page_type_class_by_type($row['page_type'], true);
+		
+		if ($ret != null)
+			return $ret;
+		else
+			return parent::instantiate_class($type, $row);
+	}
+	
 	public function template_name()
 	{
 		try

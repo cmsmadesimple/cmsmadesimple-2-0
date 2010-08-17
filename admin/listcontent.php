@@ -70,8 +70,11 @@ foreach (cms_orm('CmsTemplate')->find_all_by_active(true) as $tpl)
 $smarty->assign('template_items', $opt);
 
 $opt = array();
-$opt['CmsPage'] = 'Standard Page';
-$opt['CmsErrorPage'] = 'Error Page';
+$types = CmsPageType::get_all_page_types();
+foreach ($types as $one_type)
+{
+	$opt[$one_type->name] = $one_type->name;
+}
 $smarty->assign('page_types', $opt);
 
 $opt = array();

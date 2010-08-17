@@ -196,6 +196,19 @@ if (isset($CMS_INSTALL_CREATE_TABLES)) {
 		modified_date T,
 		extra_params XL
 	";
+	echo installer_create_tablesql($dbdict, $db_prefix."page_types", $flds, $taboptarray);
+	echo installer_create_indexsql($dbdict, $db_prefix."page_types", array('name'));
+	
+	$flds = "
+		id I KEY AUTO,
+		name C(50),
+		description XL,
+		module C(50),
+		class C(50),
+		create_date T,
+		modified_date T,
+		extra_params XL
+	";
 	echo installer_create_tablesql($dbdict, $db_prefix."content_types", $flds, $taboptarray);
 	echo installer_create_indexsql($dbdict, $db_prefix."content_types", array('name'));
 
