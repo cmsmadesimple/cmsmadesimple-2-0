@@ -136,7 +136,7 @@ if (isset($CMS_INSTALL_CREATE_TABLES)) {
 
 	$flds = "
 		id I KEY AUTO,
-		type C(25),
+		page_type C(25),
 		owner_id I,
 		parent_id I,
 		template_id I,
