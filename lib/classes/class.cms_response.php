@@ -100,9 +100,15 @@ class CmsResponse extends CmsObject
 		return 'UTF-8';
 	}
 	
+	function is_status_code($code)
+	{
+		return array_key_exists($code, $this->_statuses);
+	}
+	
 	function set_status_code($code = '200')
 	{
-		$this->status = $code;
+		if ($this->is_status_code($code))
+			$this->status = $code;
 	}
 	
 	function add_header($name, $value)

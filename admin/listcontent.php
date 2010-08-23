@@ -527,7 +527,7 @@ function content_select($html_id)
 		$smarty->assign_by_ref('page', $page);
 		$smarty->assign('serialized_page', base64_encode(serialize($page)));
 		
-		$smarty->assign('parent_dropdown', CmsPage::create_hierarchy_dropdown($id, $page->parent_id, 'page[parent_id]', 'id="parent_dropdown"'));
+		//$smarty->assign('parent_dropdown', CmsPage::create_hierarchy_dropdown($id, $page->parent_id, 'page[parent_id]', 'id="parent_dropdown"'));
 		$parent_path = '/';
 		if ($page->parent_id > 0)
 		{
@@ -559,7 +559,10 @@ function content_new($parent_id = null)
 	if ($parent_id == null || !is_integer($parent_id))
 		$parent_id = -1;
 	
-	$smarty->assign('parent_dropdown', CmsPage::create_hierarchy_dropdown('', $parent_id, 'page[parent_id]', 'id="parent_dropdown"'));
+	//Set it so it shows properly on the dropdown
+	$page->parent_id = $parent_id;
+	
+	//$smarty->assign('parent_dropdown', CmsPage::create_hierarchy_dropdown('', $parent_id, 'page[parent_id]', 'id="parent_dropdown"'));
 	
 	$parent_path = '/';
 	if ($parent_id > 0)
@@ -800,7 +803,7 @@ function change_template($params)
 	fill_page($page, $params);
 	
 	$smarty->assign('page', $page);
-	$ajax->replace_html('#edit', $smarty->fetch('editcontent-content.tpl'));
+	$ajax->replace_html('#edit', $smarty->fetch('listcontent-content.tpl'));
 	
 	set_serialized_page($ajax, $page);
 	//$ajax->script('reset_main_content();');

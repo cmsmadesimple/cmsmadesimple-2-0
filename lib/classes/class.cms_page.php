@@ -49,6 +49,8 @@ class CmsPage extends CmsObjectRelationalMapping
 	var $parentnode = null;
 	var $children = array();
 	
+	var $_attributes = array();
+	
 	public function __construct()
 	{
 		parent::__construct();
@@ -64,6 +66,34 @@ class CmsPage extends CmsObjectRelationalMapping
 		$this->create_belongs_to_association('template', 'CmsTemplate', 'template_id');
 		$this->assign_acts_as('NestedSet');
 		//$this->assign_acts_as('Acl');
+		
+		$this->add_property('name', 1, 'information', true, true);
+		$this->add_property('menu_text', 5, 'information', true, true);
+		$this->add_property('template_id', 10, 'information', true, true);
+		$this->add_property('parent', 15, 'information', true, true);
+		$this->add_property('url_text', 20, 'information', true, true);
+		$this->add_property('alias', 25, 'information', true, true);
+
+		//$this->add_property('owner', 90);
+		//$this->add_property('additionaleditors', 91);
+		
+		$this->add_property('active', 1, 'attributes');
+		$this->add_property('show_in_menu', 5, 'attributes');
+		$this->add_property('secure', 10, 'attributes');
+		$this->add_property('cachable', 15, 'attributes');
+		$this->add_property('pagedata_codeblock', 20, 'attributes');
+		$this->add_property('target', 25, 'attributes');
+		$this->add_property('image', 30, 'attributes');
+		$this->add_property('thumbnail', 35, 'attributes');
+		$this->add_property('titleattribute', 40, 'attributes');
+		$this->add_property('accesskey', 45, 'attributes');
+		$this->add_property('tabindex', 50, 'attributes');
+		$this->add_property('disable_wysiwyg', 55, 'attributes');
+		$this->add_property('extra1', 60, 'attributes');
+		$this->add_property('extra2', 65, 'attributes');
+		$this->add_property('extra3', 70, 'attributes');
+		
+		$this->add_property('metadata', 1, 'metadata');
 	}
 	
 	/*
@@ -813,6 +843,386 @@ class CmsPage extends CmsObjectRelationalMapping
 		$result .= '</select>';
 
 		return $result;
+	}
+	
+	function add_property($name, $priority, $tab = 'attributes', $is_required = false, $has_javascript = false)
+	{
+		if (!is_array($this->_attributes))
+		{
+			$this->_attributes = array();
+		}
+
+		$this->_attributes[] = array($name, $priority, $tab, $is_required, $has_javascript);
+	}
+	
+	function remove_property($name, $default_value)
+	{
+		if (!is_array($this->_attributes)) return;
+		
+		$tmp = array();
+		for ($i = 0; $i < count($this->_attributes); $i++)
+		{
+			if (is_array($this->_attributes[$i]) && $this->_attributes[$i][0] == $name)
+			{
+				continue;
+			}
+			$tmp[] = $this->_attributes[$i];
+		}
+		$this->_attributes = $tmp;
+	}
+	
+	function has_property($name)
+	{
+		$tmp = array();
+		
+		foreach ($this->_attributes as $one)
+		{
+			$tmp[] = $one[0];
+		}
+		
+		return in_array($name, $tmp);
+	}
+	
+	protected function sort_attributes_by_priority($a, $b)
+	{
+		if ($a[1] < $b[1])
+			return -1;
+		else if ($a[1] == $b[1])
+			return 0;
+		else
+			return 1;
+	}
+	
+	function display_attributes($tab_name = '', $adding = false, $negative = false, $javascript = false)
+	{
+		$attrs = array();
+		
+		if ($tab_name != '')
+		{
+			foreach ($this->_attributes as $one)
+			{
+				if ($one[2] == $tab_name)
+					$attrs[] = $one;
+			}
+		}
+		else
+		{
+			$attrs = $this->_attributes;
+		}
+		
+		// get our required attributes
+		/*
+		$basic_attributes = array();
+		foreach ($this->_attributes as $one)
+		{
+			if ($one[3] == true)
+				$basic_attributes[] = $one;
+		}
+		*/
+		
+		// remove any duplicates
+		$tmp = array();
+		foreach ($attrs as $one)
+		{
+			$found = 0;
+			foreach ($tmp as $t1)
+			{
+				if ($one[0] == $t1[0])
+				{
+					$found = 1;
+					break;
+				}
+			}
+			if (!$found)
+			{
+				$tmp[] = $one;
+			}
+		}
+		$attrs = $tmp;
+		
+		usort($attrs, array($this, 'sort_attributes_by_priority'));
+		
+		$tmp = $this->display_admin_attributes($attrs, $adding, $javascript);
+		return $tmp;
+	}
+	
+	function display_admin_attributes($attribute_list, $adding = false, $javascript = false)
+	{
+		// sort the attributes
+		$ret = array();
+		
+		foreach ($attribute_list as $one)
+		{
+			$val = null;
+			
+			if ($javascript)
+			{
+				if ($one[4] == true)
+				{
+					$val = $this->display_javascript($one[0], $adding);
+				}
+			}
+			else
+			{
+				$val = $this->display_single_element($one[0], $adding);
+			}
+			
+			if ($val)
+			{
+				$ret[] = $val;
+			}
+		}
+		
+		return $ret;
+	}
+	
+	function display_single_element($element_name, $adding)
+	{
+		switch ($element_name)
+		{
+			case 'cachable':
+			{
+				return array(lang('cachable'), "{html_checkbox name='page[{$element_name}]' selected=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'name':
+			{
+				return array(lang('title'), "{html_input name='page[{$element_name}][en_US]' value=\$page.{$element_name}.en_US}");
+			}
+			break;
+
+			case 'menu_text':
+			{
+				return array(lang('menutext'), "{html_input name='page[{$element_name}][en_US]' value=\$page.{$element_name}.en_US}");
+			}
+			break;
+
+			case 'parent':
+			{
+				$parent_dropdown = $this->create_hierarchy_dropdown($this->id, $this->parent_id, 'page[parent_id]', 'id="parent_dropdown"');
+				return array(lang('parent'), "{\$parent_dropdown}", array('parent_dropdown' => $parent_dropdown));
+			}
+			break;
+
+			case 'active':
+			{
+				if ($this->default_content == false)
+				{
+					return array(lang('active'), "{html_checkbox name='page[{$element_name}]' selected=\$page.{$element_name}}");
+				}
+			}
+			break;
+
+			case 'show_in_menu':
+			{
+				return array(lang('showinmenu'), "{html_checkbox name='page[{$element_name}]' selected=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'target':
+			{
+				return array(lang('target'), "{html_select name='page[{$element_name}]' selected=\$page.{$element_name} options=['---'=>'none','_blank'=>'_blank','_parent'=>'_parent','_self'=>'_self','_top'=>'_top']}");
+			}
+			break;
+
+			case 'alias':
+			{
+				return array(lang('pagealias'), "{html_input html_id='alias' name='page[alias]' autocomplete='off' value=\$page.alias}&nbsp;&nbsp;<span id=\"alias_ok\" style=\"color: green;\">Ok</span>");
+			}
+			break;
+			
+			case 'url_text':
+			{
+				return array(lang('url_text'), "<span id=\"parent_path\">{\$parent_path}</span>{html_input html_id='url_text' name='page[url_text]' autocomplete='off' value=\$page.url_text}&nbsp;&nbsp;<span id=\"url_text_ok\" style=\"color: green;\">Ok</span>");
+			}
+			break;
+
+			case 'secure':
+			{
+				return array(lang('secure_page'), "{html_checkbox name='page[{$element_name}]' selected=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'image':
+			{
+				/*
+				$dir = $config['image_uploads_path'];
+				$data = $this->GetPropertyValue('image');
+				$dropdown = create_file_dropdown('image',$dir,$data,'jpg,jpeg,png,gif','',true,'','thumb_');
+				return array(lang('image').':',$dropdown);
+				*/
+			}
+			break;
+
+			case 'thumbnail':
+			{
+				/*
+				$dir = $config['image_uploads_path'];
+				$data = $this->GetPropertyValue('thumbnail');
+				$dropdown = create_file_dropdown('thumbnail',$dir,$data,'jpg,jpeg,png,gif','',true,'','thumb_',0);
+				return array(lang('thumbnail').':',$dropdown);
+				*/
+			}
+			break;
+
+			case 'titleattribute':
+			{
+				return array(lang('titleattribute'), "{html_input name='page[{$element_name}]' value=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'accesskey':
+			{
+				return array(lang('accesskey'), "{html_input name='page[{$element_name}]' value=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'tabindex':
+			{
+				return array(lang('tabindex'), "{html_input name='page[{$element_name}]' value=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'extra1':
+			{
+				return array(lang('extra1'), "{html_input name='page[{$element_name}]' value=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'extra2':
+			{
+				return array(lang('extra2'), "{html_input name='page[{$element_name}]' value=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'extra3':
+			{
+				return array(lang('extra3'), "{html_input name='page[{$element_name}]' value=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'owner':
+			{
+				$showadmin = check_ownership(get_userid(), $this->Id());
+				$userops =& $gCms->GetUserOperations();
+				if (!$adding && $showadmin)
+				{
+					return array(lang('owner').':', $userops->GenerateDropdown($this->Owner()));
+				}
+			}
+			break;
+
+			case 'additionaleditors':
+			{
+				// do owner/additional-editor stuff
+				if( $adding || check_ownership(get_userid(),$this->Id()) )
+				{
+					return $this->ShowAdditionalEditors();
+				}
+			}
+			break;
+			
+			case 'template_id':
+			{
+				return array(lang('template'), "{html_options name='page[template_id]' id='template_id' options=\$template_items selected=\$page.template_id}");
+			}
+			break;
+
+			case 'metadata':
+			{
+				return array(lang('page_metadata'), "{html_textarea name='page[{$element_name}]' value=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'pagedata_codeblock':
+			{
+				return array(lang('pagedata_codeblock'), "{html_textarea name='page[pagedata]' value=\$page.pagedata}");
+			}
+			break;
+
+			case 'searchable':
+			{
+				return array(lang('searchable'), "{html_checkbox name='page[{$element_name}]' selected=\$page.{$element_name}}");
+			}
+			break;
+
+			case 'disable_wysiwyg':
+			{
+				return array(lang('disable_wysiwyg'), "{html_checkbox name='page[{$element_name}]' selected=\$page.{$element_name}}");
+			}
+			break;
+
+			default:
+			{
+				//stack_trace();
+				//die('unknown property '.$one);
+			}
+		}
+		
+		return null;
+	}
+	
+	function display_javascript($element_name, $adding)
+	{
+		switch ($element_name)
+		{
+			case 'alias':
+			{
+				return "
+					\$('#alias').delayedObserver(function()
+					{
+						cms_ajax_check_alias({name:'alias', value:\$('#alias').val()}, {name:'page_id', value:\$('#page_id').html()}, {name:'serialized_page', value:\$('#serialized_page').val()});
+					}, 0.5);
+				";
+			}
+			break;
+			
+			case 'url_text':
+			{
+				return "
+					\$('#url_text').delayedObserver(function()
+					{
+						cms_ajax_check_url({name:'alias', value:\$('#url_text').val()}, {name:'page_id', value:\$('#page_id').html()}, {name:'parent_id', value:\$('#parent_dropdown').val()}, {name:'serialized_page', value:\$('#serialized_page').val()});
+					}, 0.5);
+				";
+			}
+			break;
+			
+			case 'parent':
+			{
+				return "
+					\$('#parent_dropdown').change(function()
+					{
+						var args = [{name:'parent_id', value:\$('#parent_dropdown').val()}, {name:'page_id', value:\$('#page_id').html()}, {name:'serialized_page', value:\$('#serialized_page').val()}];
+						cms_ajax_call('change_parent', args, {
+							success: function (data, textStatus) {
+								cms_ajax_callback(data);
+								cms_ajax_check_url({name:'alias', value:\$('#url_text').val()}, {name:'page_id', value:\$('#page_id').html()}, {name:'parent_id', value:\$('#parent_dropdown').val()}, {name:'serialized_page', value:\$('#serialized_page').val()});
+							}
+						});
+					});
+				";
+			}
+			break;
+			
+			case 'template_id':
+			{
+				return "
+					\$('#template_id').change(function()
+					{
+						cms_ajax_change_template(\$('#content_form').serializeForCmsAjax());
+					});
+				";
+			}
+			break;
+			
+			default:
+			{
+				//stack_trace();
+				//die('unknown property '.$one);
+			}
+		}
 	}
 }
 

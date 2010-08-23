@@ -29,7 +29,7 @@
  */
 function smarty_function_html_select($params, &$smarty)
 {
-    require_once $smarty->_get_plugin_filepath('shared','escape_special_chars');
+    //require_once $smarty->_get_plugin_filepath('shared','escape_special_chars');
     
     $name = null;
     $values = null;
@@ -62,7 +62,7 @@ function smarty_function_html_select($params, &$smarty)
 
             default:
                 if(!is_array($_val)) {
-                    $extra .= ' '.$_key.'="'.smarty_function_escape_special_chars($_val).'"';
+                    $extra .= ' '.$_key.'="'.$_val.'"';
                 } else {
                     $smarty->trigger_error("html_options: extra attribute '$_key' cannot be an array", E_USER_NOTICE);
                 }
@@ -99,11 +99,11 @@ function smarty_function_html_select($params, &$smarty)
 
 function smarty_function_html_select_optoutput($key, $value, $selected) {
     if(!is_array($value)) {
-        $_html_result = '<option label="' . smarty_function_escape_special_chars($value) . '" value="' .
-            smarty_function_escape_special_chars($key) . '"';
+        $_html_result = '<option label="' . $value . '" value="' .
+            $key . '"';
         if (in_array((string)$key, $selected))
             $_html_result .= ' selected="selected"';
-        $_html_result .= '>' . smarty_function_escape_special_chars($value) . '</option>' . "\n";
+        $_html_result .= '>' . $value . '</option>' . "\n";
     } else {
         $_html_result = smarty_function_html_select_optgroup($key, $value, $selected);
     }
@@ -111,7 +111,7 @@ function smarty_function_html_select_optoutput($key, $value, $selected) {
 }
 
 function smarty_function_html_select_optgroup($key, $values, $selected) {
-    $optgroup_html = '<optgroup label="' . smarty_function_escape_special_chars($key) . '">' . "\n";
+    $optgroup_html = '<optgroup label="' . $key . '">' . "\n";
     foreach ($values as $key => $value) {
         $optgroup_html .= smarty_function_html_select_optoutput($key, $value, $selected);
     }
