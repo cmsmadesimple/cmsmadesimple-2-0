@@ -1,0 +1,19 @@
+<module_info>
+    <name>MicroTiny</name>
+    <version>1.0</version>
+    <summary>It&apos;s a WYSIWYG. It makes Textareas more friendly and whatnot.</summary>
+    <minimum_core_version>1.99</minimum_core_version>
+    <authors>
+        <author>
+            <name>Morten Poulsen</name>
+            <email>morten@poulsen.org</email>
+        </author>
+    </authors>
+    <capabilities>
+        <capability>wysiwyg</capability>
+    </capabilities>
+    <admin_interface>true</admin_interface>
+    <cms_forge_project>microtiny</cms_forge_project>
+    <auto_install>false</auto_install>
+    <auto_upgrade>false</auto_upgrade>
+</module_info>

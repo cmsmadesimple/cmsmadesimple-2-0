@@ -34,7 +34,9 @@
     <event>TestEventThing</event>
   </events_sent>
   <capabilities>
-    <capability>some_capability</capability>
+    <capability>wysiwyg</capability>
+    <capability>syntax_highlighter</capability>
+    <capability>something_else</capability>
   </capabilities>
   <content_types>
     <type>TestContentType</type>
@@ -45,7 +47,7 @@
   <admin_interface>true</admin_interface>
   <admin_section>extensions</admin_section>
   <admin_buffering>true</admin_buffering>
-  <cms_form_project>test</cms_form_project>
+  <cms_forge_project>test</cms_forge_project>
   <content_module>true</content_module>
   <plugin_module>true</plugin_module>
   <plugins>
@@ -57,7 +59,6 @@
       <callback>menu_children_plugin_callback</callback>
     </plugin>
   </plugins>
-  <wysiwyg>false</wysiwyg>
   <auto_install>true</auto_install>
   <auto_upgrade>true</auto_upgrade>
 </module_info>

@@ -15,8 +15,6 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#$Id: class.cms_module_base.php 5348 2008-12-14 18:32:56Z wishy $
 
 define('MODULE_ACTION_REGEX', '/[^A-Za-z0-9\-_+]/');
 
@@ -38,6 +36,7 @@ class CmsModuleBase extends CmsObject
 	public $filter_id_list = array();
 	public $loaded_includes = array();
 	public $default_allowed_props = array('module', 'id', 'return_id', 'action');
+	public $is_active = false; //Use for wysiwygs and other types of modules. Ignore if not needed.
 	
 	function __construct()
 	{

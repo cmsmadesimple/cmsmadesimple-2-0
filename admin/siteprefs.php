@@ -332,18 +332,7 @@ foreach( $languages as $key=>$value )
 $smarty->assign('languages',$tmp);
 $smarty->assign('templates',$templates);
 
-$tmp = array(''=>lang('none'));
-
-foreach($gCms->modules as $key=>$value)
-{
-	if ($gCms->modules[$key]['installed'] == true &&
-		$gCms->modules[$key]['active'] == true &&
-		$gCms->modules[$key]['object']->IsWYSIWYG())
-		{
-			if (isset($tmp[$key])) $tmp[$key].= $key; else $tmp[$key]=$key;
-		}
-}
-$smarty->assign('wysiwyg',$tmp);
+$smarty->assign('wysiwyg',array_merge(array(''=>lang('none')), CmsModuleLoader::has_capability('wysiwyg')));
 
 if ($dir=opendir(dirname(__FILE__)."/themes/")) 
 { 

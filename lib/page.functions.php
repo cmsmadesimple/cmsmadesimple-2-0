@@ -15,8 +15,6 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#$Id$
 
 /**
  * Page related functions.  Generally these are functions not necessarily
@@ -715,17 +713,17 @@ function get_stylesheet_media_types($template_id)
 /**
  * Strips slashes from an array of values.
  */
-function & stripslashes_deep(&$value) 
-{ 
-        if (is_array($value)) 
-        { 
-                $value = array_map('stripslashes_deep', $value); 
-        } 
-        elseif (!empty($value) && is_string($value)) 
-        { 
-                $value = stripslashes($value); 
-        } 
-        return $value;
+function & stripslashes_deep(&$value)
+{
+	if (is_array($value))
+	{
+		$value = array_map('stripslashes_deep', $value);
+	}
+	elseif (!empty($value) && is_string($value))
+	{
+		$value = stripslashes($value);
+	}
+	return $value;
 }
 	
 function create_textarea($enablewysiwyg, $text, $name, $classname='', $id='', $encoding='', $stylesheet='', $width='80', $height='15',$forcewysiwyg='',$wantedsyntax='',$addtext='')
@@ -733,69 +731,59 @@ function create_textarea($enablewysiwyg, $text, $name, $classname='', $id='', $e
 	global $gCms;
 	$result = '';
 
-// 	if ($enablewysiwyg == true)
-// 	{
-// 	  $module_list = CmsModuleLoader::get_module_list();
-// 	  while (list($key) = each($module_list))
-// 	    {
-// 	      if( !CmsModuleLoader::is_installed($key) ) continue;
-// 	      if( !CmsModuleLoader::is_active($key) ) continue;
-// 	      $value = CmsModuleLoader::get_module_class($key);
-// 	      if( !$value ) continue;
+	if ($enablewysiwyg == true)
+	{
+		$module_list = CmsModuleLoader::has_capability('wysiwyg');
+		foreach ($module_list as $module_name)
+		{
+			if ($forcewysiwyg == '')
+			{
+				if (get_userid(false) == false)
+				{
+					if ($module_name == CmsApplication::get_preference('frontendwysiwyg'))
+					{
+						$result = CmsModuleLoader::get_module_class($module_name)->wysiwyg_textarea($name, $width, $height, $encoding, $text, $stylesheet, $addtext);
+					}
+				}
+				else
+				{
+					if ($module_name == get_preference(get_userid(false), 'wysiwyg'))
+					{
+						$result = CmsModuleLoader::get_module_class($module_name)->wysiwyg_textarea($name, $width, $height, $encoding, $text, $stylesheet, $addtext);
+					}
+				}
+			}
+			else
+			{
+				if ($module_name == $forcewysiwyg)
+				{
+					$result = CmsModuleLoader::get_module_class($module_name)->wysiwyg_textarea($name, $width, $height, $encoding, $text, $stylesheet, $addtext);
+				}
+			}
+		}
+	}
 
-// 			if ($gCms->modules[$key]['installed'] == true && //is the module installed?
-// 				$gCms->modules[$key]['active'] == true &&			 //us the module active?
-// 				$gCms->modules[$key]['object']->IsWYSIWYG())   //is it a wysiwyg module?
-// 			{
-			  
-// 				if ($forcewysiwyg=='') {
-				  
-// 				  if (get_userid(false)==false) {
-
-// 				    //echo "admin";
-// 					  //get_preference(get_userid(), 'wysiwyg')!="" && //not needed as it won't match the wisiwyg anyway					  
-// 				    if ($gCms->modules[$key]['object']->GetName()==get_site_preference('frontendwysiwyg')) {
-				      
-// 				      $result=$gCms->modules[$key]['object']->WYSIWYGTextarea($name,$width,$height,$encoding,$text,$stylesheet,$addtext);
-// 					  }					  
-// 				  } else {
-				    
-// 				    if ($gCms->modules[$key]['object']->GetName()==get_preference(get_userid(false), 'wysiwyg')) {
-// 				      $result=$gCms->modules[$key]['object']->WYSIWYGTextarea($name,$width,$height,$encoding,$text,$stylesheet,$addtext);
-// 					  }
-// 				  }	 
-// 				} else {
-// 					if ($gCms->modules[$key]['object']->GetName()==$forcewysiwyg) {
-// 					  $result=$gCms->modules[$key]['object']->WYSIWYGTextarea($name,$width,$height,$encoding,$text,$stylesheet,$addtext);
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-	
-//   if (($result=="") && ($wantedsyntax!=''))
-// 	{	  
-// 		reset($gCms->modules);
-// 		while (list($key) = each($gCms->modules))
-// 		{
-// 			$value =& $gCms->modules[$key];
-// 			if ($gCms->modules[$key]['installed'] == true && //is the module installed?
-// 				$gCms->modules[$key]['active'] == true &&			 //us the module active?
-// 				$gCms->modules[$key]['object']->IsSyntaxHighlighter())   //is it a syntaxhighlighter module module?
-// 			{
-// 				if ($forcewysiwyg=='') {
-// 					//get_preference(get_userid(), 'wysiwyg')!="" && //not needed as it won't match the wisiwyg anyway
-// 					if ($gCms->modules[$key]['object']->GetName()==get_preference(get_userid(false), 'syntaxhighlighter')) {
-// 					  $result=$gCms->modules[$key]['object']->SyntaxTextarea($name,$wantedsyntax,$width,$height,$encoding,$text,$addtext);
-// 					}
-// 				} else {
-// 					if ($gCms->modules[$key]['object']->GetName()==$forcewysiwyg) {
-// 					  $result=$gCms->modules[$key]['object']->SyntaxTextarea($name,$wantedsyntax,$width,$height,$encoding,$text,$addtext);
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
+	if (($result == "") && ($wantedsyntax != ''))
+	{
+		$module_list = CmsModuleLoader::has_capability('syntax_highlighter');
+		foreach ($module_list as $module_name)
+		{
+			if ($forcewysiwyg == '')
+			{
+				if ($module_name == get_preference(get_userid(false), 'syntaxhighlighter'))
+				{
+					CmsModuleLoader::get_module_class($module_name)->syntax_textarea($name, $wantedsyntax, $width, $height, $encoding, $text, $addtext);
+				}
+			}
+			else
+			{
+				if ($module_name == $forcewysiwyg)
+				{
+					$result = CmsModuleLoader::get_module_class($module_name)->syntax_textarea($name, $wantedsyntax, $width, $height, $encoding, $text, $addtext);
+				}
+			}
+		}
+	}
 
 	if ($result == '')
 	{
@@ -809,62 +797,16 @@ function create_textarea($enablewysiwyg, $text, $name, $classname='', $id='', $e
 			$result .= ' id="'.$id.'"';
 		}
 		if( !empty( $addtext ) )
-		  {
-		    $result .= ' '.$addtext;
-		  }
+		{
+			$result .= ' '.$addtext;
+		}
 
-		$result .= '>'.cms_htmlentities($text,ENT_NOQUOTES,get_encoding($encoding)).'</textarea>';
+		$result .= '>'.cms_htmlentities($text, ENT_NOQUOTES, get_encoding($encoding)) . '</textarea>';
 	}
 
 	return $result;
 }
 
-/*
- * creates a textarea that does syntax highlighting on the source code.
- * The following also needs to be added to the <form> tag for submit to work.
- * if($use_javasyntax){echo 'onSubmit="textarea_submit(
- * this, \'custom404,sitedown\');"';}
- */
-/*
-OBSOLETE!!!
-
-function textarea_highlight($use_javasyntax, $text, $name, $class_name="syntaxHighlight", $syntax_type="HTML (Complex)", $id="", $encoding='')
-{
-    if ($use_javasyntax)
-	{
-        $text = ereg_replace("\r\n", "<CMSNewLine>", $text);
-        $text = ereg_replace("\r", "<CMSNewLine>", $text);
-        $text = cms_htmlentities(ereg_replace("\n", "<CMSNewLine>", $text));
-
-        // possible values for syntaxType are: Java, C/C++, LaTeX, SQL,
-        // Java Properties, HTML (Simple), HTML (Complex)
-
-        $output = '<applet name="CMSSyntaxHighlight"
-            code="org.CMSMadeSimple.Syntax.Editor.class" width="100%">
-                <param name="cache_option" VALUE="Plugin">
-                <param name="cache_archive" VALUE="SyntaxHighlight.jar">
-                <param name="cache_version" VALUE="612.0.0.0">
-                <param name="content" value="'.$text.'">
-                <param name="syntaxType" value="'.$syntax_type.'">
-                Sorry, the syntax highlighted textarea will not work with your
-                browser. Please use a different browser or turn off syntax
-                highlighting under user preferences.
-            </applet>
-            <input type="hidden" name="'.$name.'" value="">';
-
-    }
-	else
-	{
-        $output = '<textarea name="'.$name.'" cols="80" rows="24"
-            class="'.$class_name.'"';
-        if ($id<>"")
-            $output.=' id="'.$id.'"';
-        $output.='>'.cms_htmlentities($text,ENT_NOQUOTES,get_encoding($encoding)).'</textarea>';
-    }
-
-    return $output;
-}
-*/
 /*
  * Displays the login form (frontend)
  */

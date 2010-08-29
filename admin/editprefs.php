@@ -174,19 +174,15 @@ if (FALSE == empty($page_message)) {
 					<select name="wysiwyg">
 					<option value=""><?php echo lang('none'); ?></option>
 					<?php
-						foreach($gCms->modules as $key=>$value)
+						$modules = CmsModuleLoader::has_capability('wysiwyg');
+						foreach ($modules as $one_module)
 						{
-							if ($gCms->modules[$key]['installed'] == true &&
-								$gCms->modules[$key]['active'] == true &&
-								$gCms->modules[$key]['object']->IsWYSIWYG())
+							echo '<option value="'.$one_module.'"';
+							if ($wysiwyg == $one_module)
 							{
-								echo '<option value="'.$key.'"';
-								if ($wysiwyg == $key)
-								{
-									echo ' selected="selected"';
-								}
-								echo '>'.$key.'</option>';
+								echo ' selected="selected"';
 							}
+							echo '>'.$one_module.'</option>';
 						}
 					?>
 					</select>
@@ -198,19 +194,15 @@ if (FALSE == empty($page_message)) {
 					<select name="syntaxhighlighter">
 					<option value=""><?php echo lang('none'); ?></option>
 					<?php
-						foreach($gCms->modules as $key=>$value)
+						$modules = CmsModuleLoader::has_capability('syntax_highlighter');
+						foreach ($modules as $one_module)
 						{
-							if ($gCms->modules[$key]['installed'] == true &&
-								$gCms->modules[$key]['active'] == true &&
-								$gCms->modules[$key]['object']->IsSyntaxHighlighter())
+							echo '<option value="'.$one_module.'"';
+							if ($wysiwyg == $one_module)
 							{
-								echo '<option value="'.$key.'"';
-								if ($syntaxhighlighter == $key)
-								{
-									echo ' selected="selected"';
-								}
-								echo '>'.$key.'</option>';
+								echo ' selected="selected"';
 							}
+							echo '>'.$one_module.'</option>';
 						}
 					?>
 					</select>

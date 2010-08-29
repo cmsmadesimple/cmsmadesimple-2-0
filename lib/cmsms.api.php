@@ -2297,7 +2297,7 @@ function start_tag($name, $params, $self_close = false, $extra_html = '', $drop_
 	
 	if ($extra_html != '')
 	{
-		$text .= " {$extra}";
+		$text .= " {$extra_html}";
 	}
 	
 	$text .= ($self_close ? ' />' : '>');

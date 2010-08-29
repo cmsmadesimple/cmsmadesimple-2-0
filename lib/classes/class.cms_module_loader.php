@@ -250,9 +250,26 @@ class CmsModuleLoader extends CmsObject
 		return $name;
 	}
 	
-	public static function get_module_list()
+	public static function get_module_list($only_installed_and_active = false)
 	{
-		return self::$module_list;
+		if (!$only_installed_and_active)
+		{
+			return self::$module_list;
+		}
+		else
+		{
+			$modules = array();
+
+			foreach (self::$module_list as $one_module)
+			{
+				if (self::is_installed($one_module['name']) && self::is_active($one_module['name']))
+				{
+					$modules[] = $one_module;
+				}
+			}
+
+			return $modules;
+		}
 	}
 	
 	public static function get_module_class($name, $check_active = true, $check_deps = true)
