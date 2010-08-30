@@ -864,7 +864,7 @@ abstract class CmsObjectRelationalMapping extends CmsObject implements ArrayAcce
 					{
 						#$queryparams[] = $time;
 						$midpart .= "{$table}.{$onefield} = {$time}, ";
-						$this->$onefield = time();
+						$this->$onefield = new CmsDateTime();
 					}
 					else if ($this->type_field != '' && $this->type_field == $onefield)
 					{
@@ -971,7 +971,7 @@ abstract class CmsObjectRelationalMapping extends CmsObject implements ArrayAcce
 				{
 					$queryparams[] = trim($time, "'");
 					$midpart .= $onefield . ', ';
-					$this->$onefield = time();
+					$this->$onefield = new CmsDateTime();
 				}
 				else if ($this->type_field != '' && $this->type_field == $onefield)
 				{
