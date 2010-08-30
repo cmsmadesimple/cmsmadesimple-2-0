@@ -80,7 +80,7 @@ class MicroTiny extends CmsModuleBase implements CmsModuleWysiwyg
 
 		if ($this->is_active) {
 			$output='
-				<script type="text/javascript" src="'.$gCms->config['root_url'].'/modules/MicroTiny/tinymce/tiny_mce.js"></script>';
+				<script type="text/javascript" src="' . CmsRequest::get_calculated_url_base(true) . '/modules/MicroTiny/tinymce/tiny_mce.js"></script>';
 			$configurl="";
 			if ($this->Preference->get("usestaticconfig")!="1") {
 				$params=array("templateid"=>$this->templateid,"languageid"=>$languageid);
@@ -88,11 +88,11 @@ class MicroTiny extends CmsModuleBase implements CmsModuleWysiwyg
 				$configurl = $this->Url->link(array('id' => 'm1_', 'action' => 'microtinyconfig', 'params' => $params, 'only_href' => true)); /*"m1_","microtinyconfig","","",$params,"",true*/
 				$configurl.="&amp;showtemplate=false";
 			} else {
-				$configurl=$gCms->config['root_url'].'/tmp/microtinyconfig.js';
+				$configurl = CmsRequest::get_calculated_url_base(true) . '/tmp/microtinyconfig.js';
 			}
 
 			$output.='
-				<script type="text/javascript" src="'.$configurl.'"></script>
+				<script type="text/javascript" src="' . $configurl . '"></script>
 				';
 		} else {
 			$output="<!-- MicroTiny Session vars empty -->";

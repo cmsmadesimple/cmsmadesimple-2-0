@@ -27,7 +27,7 @@
 define("ROOT_DIR", dirname(dirname(__FILE__)));
 define("DS", DIRECTORY_SEPARATOR);
 
-$CMS_VERSION = "2.0-beta1";
+$CMS_VERSION = "2.0-alpha1";
 $CMS_VERSION_NAME = "Canala";
 $CMS_SCHEMA_VERSION = "1";
 
