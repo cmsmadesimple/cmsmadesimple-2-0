@@ -38,7 +38,7 @@
             {else}
                 <span style="display:none;" id="page_id">-1</span>
             {/if}
-    		<label>{lang string='page_type'}:</label> {html_options class='page_type_picker' name="page[page_type]" options=$page_types selected=$page.page_type}<br />
+    		<label>{lang string='page_type'}:</label> {html_options class='page_type_picker' id='page_type' name="page[page_type]" options=$page_types selected=$page.page_type}<br />
             {call name=show_tab_contents page=$page tab_name='information'}
     	{$theme_object->end_tab()}
     	{$theme_object->start_tab('edit')}
@@ -58,6 +58,10 @@
 <script type='text/javascript'>
 <!--
 $(function() {
+    $('#page_type').change(function()
+	{
+		cms_ajax_change_page_type($('#content_form').serializeForCmsAjax());
+	});
     {call name=show_tab_contents page=$page tab_name='' javascript=true}
 });
 //-->

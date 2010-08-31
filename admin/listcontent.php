@@ -43,6 +43,7 @@ $cms_ajax->register_function('check_url');
 $cms_ajax->register_function('check_alias');
 $cms_ajax->register_function('change_parent');
 $cms_ajax->register_function('change_template');
+$cms_ajax->register_function('change_page_type');
 
 function check_modify_all($userid)
 {
@@ -628,6 +629,15 @@ function fill_page(&$page, $params)
 {
 	if ($params['page'])
 	{
+		//See if the page type changed.  If so, instantiate the new class
+		if (isset($params['page']['page_type']) && $params['page']['page_type'] != $page->page_type)
+		{
+			$ret = CmsPageType::get_page_type_class_by_type($params['page']['page_type'], true);
+			if ($ret != null)
+			{
+				$page = $ret;
+			}
+		}
 		$page->update_parameters($params['page']);
 		$valid = !$page->check_not_valid();
 		if ($valid)
@@ -804,6 +814,22 @@ function change_template($params)
 	
 	$smarty->assign('page', $page);
 	$ajax->replace_html('#edit', $smarty->fetch('listcontent-content.tpl'));
+	
+	set_serialized_page($ajax, $page);
+	//$ajax->script('reset_main_content();');
+	return $ajax->get_result();
+}
+
+function change_page_type($params)
+{
+	$smarty = cms_smarty();
+	$ajax = new CmsAjaxResponse();
+	$page = get_serialized_page($params['serialized_page']);
+	
+	fill_page($page, $params);
+	
+	$smarty->assign('page', $page);
+	$ajax->replace_html('#contentsummary', $smarty->fetch('listcontent-summary.tpl'));
 	
 	set_serialized_page($ajax, $page);
 	//$ajax->script('reset_main_content();');
