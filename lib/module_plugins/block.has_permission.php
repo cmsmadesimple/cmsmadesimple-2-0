@@ -34,14 +34,12 @@ function smarty_block_has_permission($params, $content, &$smarty, &$repeat)
 		$permissions = explode(",",$params['perm']);
 		foreach ($permissions as $oneperm)
 		{
-			if ( CmsAcl::check_permission($oneperm,CmsLogin::get_current_user(),$module->get_name()) )
+			$perm = explode("|",$oneperm);
+			if ( CmsAcl::check_permission($perm[0],CmsLogin::get_current_user(),$module->get_name()),isset($perm[1])?$perm[1]:'' )
 			{
 				return; //Permission match user has rights
 			}
-			elseif ( CmsAcl::check_permission($oneperm,CmsLogin::get_current_user(), 'Core') )
-			{
-				return; //Permission match user has rights
-			}
+
 		}
 		$repeat = false;
 		return;

@@ -70,6 +70,13 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			FILTER_SANITIZE_STRING
 		);
 
+		$assign = '';
+		if (isset($params['assign']) )
+		{
+			$assign = $params['assign'];
+			unset($params['assign']);
+		}
+
 		if ($check_keys && !are_all_keys_valid($params, $default_params))
 			throw new CmsInvalidKeyException(invalid_key($params, $default_params));
 		
@@ -135,7 +142,14 @@ class CmsModuleFormExtension extends CmsModuleExtension
 
 		cmsms()->set('formcount', $form_count + 1);
 
-		return $text;
+		if ($assign == '')
+		{
+			cms_smarty()->assign($assign, $text);
+		}
+		else
+		{
+			return $text;
+		}
 	}
 	
 	/**
@@ -152,7 +166,14 @@ class CmsModuleFormExtension extends CmsModuleExtension
 	 **/
 	public function form_end($params = array(), $check_keys = false)
 	{
-		return end_tag('form');
+		if (isset($params['assign'])
+		{
+			cms_smarty()->assign($params['assign'], end_tag('form'));
+		}
+		else
+		{
+			return end_tag('form');
+		}
 	}
 	
 	/**
@@ -203,6 +224,13 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			FILTER_SANITIZE_STRING
 		);
 		
+		$assign = '';
+		if (isset($params['assign']) )
+		{
+			$assign = $params['assign'];
+			unset($params['assign']);
+		}
+
 		if ($check_keys && !are_all_keys_valid($params, $default_params))
 			throw new CmsInvalidKeyException(invalid_key($params, $default_params));
 		
@@ -236,8 +264,15 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		unset($params['file']);
 		
 		$text .= start_tag('input', $params, true, $extra);
-		
-		return $text;
+
+		if ($assign == '')
+		{
+			cms_smarty()->assign($assign, $text);
+		}
+		else
+		{
+			return $text;
+		}
 	}
 	
 	/**
@@ -272,11 +307,18 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			FILTER_SANITIZE_STRING
 		);
 		
+		$assign = '';
+		if (isset($params['assign']) )
+		{
+			$assign = $params['assign'];
+			unset($params['assign']);
+		}
+		
 		if ($check_keys && !are_all_keys_valid($params, $default_params))
 			throw new CmsInvalidKeyException(invalid_key($params, $default_params));
 		
 		$params['type'] = 'hidden';
-		
+
 		//Combine EVERYTHING together into a big managerie
 		$params = array_merge($default_params, strip_extra_params($params, $default_params, 'params'));
 		unset($params['params']);
@@ -288,7 +330,15 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		}
 		unset($params['extra']);
 
-		return start_tag('input', $params, true, $extra);
+
+		if ($assign == '')
+		{
+			cms_smarty()->assign($assign, start_tag('input', $params, true, $extra));
+		}
+		else
+		{
+			return start_tag('input', $params, true, $extra);
+		}
 	}
 	
 	/**
@@ -325,9 +375,15 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			FILTER_SANITIZE_STRING
 		);
 		
+		$assign = '';
+		if (isset($params['assign']) )
+		{
+			$assign = $params['assign'];
+			unset($params['assign']);
+		}
 		if ($check_keys && !are_all_keys_valid($params, $default_params))
 			throw new CmsInvalidKeyException(invalid_key($params, $default_params));
-		
+
 		//Combine EVERYTHING together into a big managerie
 		$params = array_merge($default_params, strip_extra_params($params, $default_params, 'params'));
 		unset($params['params']);
@@ -346,8 +402,17 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		}
 		unset($params['extra']);
 		
-		return start_tag('input', array('type' => 'hidden', 'name' => $params['name'], 'value' => '0'), true) . 
+		if ($assign == '')
+		{
+			cms_smarty()->assign($assign, start_tag('input', array('type' => 'hidden', 'name' => $params['name'], 'value' => '0'), true) . 
+			start_tag('input', $params, true, $extra) );
+		}
+		else
+		{
+			return start_tag('input', array('type' => 'hidden', 'name' => $params['name'], 'value' => '0'), true) . 
 			start_tag('input', $params, true, $extra);
+		}
+
 	}
 	
 	/**
@@ -387,6 +452,13 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			CmsResponse::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
+
+		$assign = '';
+		if (isset($params['assign']) )
+		{
+			$assign = $params['assign'];
+			unset($params['assign']);
+		}
 		
 		if ($check_keys && !are_all_keys_valid($params, $default_params))
 			throw new CmsInvalidKeyException(invalid_key($params, $default_params));
@@ -422,7 +494,14 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		unset($params['extra']);
 		unset($params['confirm_text']);
 		
-		return start_tag('input', $params, true, $extra);
+		if ($assign == '')
+		{
+			cms_smarty()->assign($assign, start_tag('input', $params, true, $extra) );
+		}
+		else
+		{
+			return start_tag('input', $params, true, $extra);
+		}
 	}
 	
 	/**
@@ -458,6 +537,13 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			CmsResponse::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
+
+		$assign = '';
+		if (isset($params['assign']) )
+		{
+			$assign = $params['assign'];
+			unset($params['assign']);
+		}
 		
 		if ($check_keys && !are_all_keys_valid($params, $default_params))
 			throw new CmsInvalidKeyException(invalid_key($params, $default_params));
@@ -483,7 +569,14 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		}
 		unset($params['extra']);
 		
-		return start_tag('select', $params, false, $extra);
+		if ($assign == '')
+		{
+			cms_smarty()->assign($assign, start_tag('input', $params, true, $extra) );
+		}
+		else
+		{
+			return start_tag('input', $params, true, $extra);
+		}
 	}
 	
 	/**
@@ -516,6 +609,13 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			'params' => coalesce_key($params, 'params', array())
 		);
 		
+		$assign = '';
+		if (isset($params['assign']) )
+		{
+			$assign = $params['assign'];
+			unset($params['assign']);
+		}
+
 		if ($check_keys && !are_all_keys_valid($params, $default_params))
 			throw new CmsInvalidKeyException(invalid_key($params, $default_params));
 
@@ -559,7 +659,14 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			$count++;
 		}
 		
-		return $text;
+		if ($assign == '')
+		{
+			cms_smarty()->assign($assign, $text);
+		}
+		else
+		{
+			return $text;
+		}
 	}
 
 	/**
@@ -603,6 +710,13 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			CmsResponse::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
+
+		$assign = '';
+		if (isset($params['assign']) )
+		{
+			$assign = $params['assign'];
+			unset($params['assign']);
+		}
 		
 		if ($check_keys && !are_all_keys_valid($params, $default_params))
 			throw new CmsInvalidKeyException(invalid_key($params, $default_params));
@@ -639,7 +753,14 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		
 		$text .= start_tag('textarea', $params, true, $extra) . $content . end_tag('textarea');
 		
-		return $text;
+		if ($assign == '')
+		{
+			cms_smarty()->assign($assign, $text);
+		}
+		else
+		{
+			return $text;
+		}
 	}
 
 }

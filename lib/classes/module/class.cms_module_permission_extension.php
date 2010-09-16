@@ -27,31 +27,28 @@ class CmsModulePermissionExtension extends CmsModuleExtension
 	* Create's a new permission for use by the module.
 	*
 	* @param string Name of the permission to create
-	* @param string Description of the permission
-	* @Depreciated Use CmsAcl:create_permission_definition($name, $module, $extra_attr = '', $hierarchical = false, $table = '')
+	* @param string The extra attribute of the permission to remove
+	* @param bool todo dev
+	* @param string todo dev
 	*/
-	public function create($permission_name, $permission_text)
+	public function create($permission_name, $extra_attr = '', $hierarchical = false, $table = '')
 	{
-		CmsAcl::create_permission_definition($permission_name,$this->module->get_name());
+		CmsAcl::create_permission_definition($permission_name,$this->module->get_name(), $extra_attr, $hierarchical, $table);
 	}
 
 	/**
 	* Checks a permission against the currently logged in user.
 	*
 	* @param string The name of the permission to check against the current user
+	* @param string The extra attribute of the permission to remove
+	* @param bool todo dev
+	* @param string todo dev
 	*/
-	public function check($permission_name)
+	public function check($permission_name, $extra_attr = '', $hierarchical = false, $table = '')
 	{
 		$user = CmsLogin::get_current_user();
-		$tmp = CmsAcl::check_permission($permission_name, $user, $this->module->get_name());
-		if (!$tmp)
-		{
-			return CmsAcl::check_permission($permission_name, $user, 'Core');
-		}
-		else
-		{
-			return $tmp;
-		}
+		$tmp = CmsAcl::check_permission($permission_name, $user, $this->module->get_name(), $extra_attr, $hierarchical, $table);
+		return $tmp;
 	}
 
 	/**
@@ -59,13 +56,13 @@ class CmsModulePermissionExtension extends CmsModuleExtension
 	* permission would have to be set to all groups again.
 	*
 	* @param string The name of the permission to remove
-	* @Depreciated Use CmsAcl:delete_permission_definition($name, $module, $extra_attr)
+	* @param string The extra attribute of the permission to remove
 	*/
-	public function remove($permission_name)
+	public function remove($permission_name, $extra_attr = '')
 	{
-		if (!CmsAcl::delete_permission_definition($permission_name, $this->module->get_name()) )
+		if (!CmsAcl::delete_permission_definition($permission_name, $this->module->get_name()), $extra_attr )
 		{
-				return CmsAcl::delete_permission_definition($permission_name, 'Core');
+				return CmsAcl::delete_permission_definition($permission_name, 'Core', $extra_attr);
 		}
 	}
 }
