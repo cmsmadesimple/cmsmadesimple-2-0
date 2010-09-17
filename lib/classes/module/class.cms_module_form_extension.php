@@ -56,6 +56,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			'extra' => coalesce_key($params, 'extra', ''), 
 			'use_current_page_as_action' => coalesce_key($params, 'use_current_page_as_action', false, FILTER_VALIDATE_BOOLEAN),
 			'params' => coalesce_key($params, 'params', array()),
+			'assign' => coalesce_key($params, 'assign', '', FILTER_SANITIZE_STRING),
 			'id' => coalesce_key($params, 'id', $this->id),
 			'return_id' => coalesce_key($params, 'return_id', $this->return_id)
 		);
@@ -166,9 +167,10 @@ class CmsModuleFormExtension extends CmsModuleExtension
 	 **/
 	public function form_end($params = array(), $check_keys = false)
 	{
-		if (isset($params['assign'])
+		$assign = coalesce_key($params, 'assign', '', FILTER_SANITIZE_STRING);
+		if (isset($assign)
 		{
-			cms_smarty()->assign($params['assign'], end_tag('form'));
+			cms_smarty()->assign($assign, end_tag('form'));
 		}
 		else
 		{
@@ -216,6 +218,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			'password' => coalesce_key($params, 'password', false, FILTER_VALIDATE_BOOLEAN),
 			'file' => coalesce_key($params, 'file', false, FILTER_VALIDATE_BOOLEAN),
 			'accept' => coalesce_key($params, 'accept', '', FILTER_SANITIZE_STRING),
+			'assign' => coalesce_key($params, 'assign', '', FILTER_SANITIZE_STRING),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		$default_params['id'] = coalesce_key($params,
@@ -299,6 +302,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			'name' => $this->id . coalesce_key($params, 'name', 'input', FILTER_SANITIZE_STRING),
 			'value' => coalesce_key($params, 'value', '', FILTER_SANITIZE_STRING),
 			'extra' => coalesce_key($params, 'extra', ''),
+			'assign' => coalesce_key($params, 'assign', '', FILTER_SANITIZE_STRING),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		$default_params['id'] = coalesce_key($params,
@@ -367,6 +371,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			'checked' => coalesce_key($params, 'checked', false, FILTER_VALIDATE_BOOLEAN),
 			'value' => coalesce_key($params, 'value', '1', FILTER_SANITIZE_STRING),
 			'extra' => coalesce_key($params, 'extra', ''),
+			'assign' => coalesce_key($params, 'assign', '', FILTER_SANITIZE_STRING),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		$default_params['id'] = coalesce_key($params,
@@ -445,6 +450,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			'image' => coalesce_key($params, 'image', '', FILTER_SANITIZE_STRING),
 			'confirm_text' => coalesce_key($params, 'confirm_text', '', FILTER_SANITIZE_STRING),
 			'reset' => coalesce_key($params, 'reset', false, FILTER_VALIDATE_BOOLEAN),
+			'assign' => coalesce_key($params, 'assign', '', FILTER_SANITIZE_STRING),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		$default_params['id'] = coalesce_key($params,
@@ -530,6 +536,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			'extra' => coalesce_key($params, 'extra', ''),
 			'multiple' => coalesce_key($params, 'multiple', false, FILTER_VALIDATE_BOOLEAN),
 			'size' => coalesce_key($params, 'size', 3, FILTER_SANITIZE_NUMBER_INT),
+			'assign' => coalesce_key($params, 'assign', '', FILTER_SANITIZE_STRING),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		$default_params['id'] = coalesce_key($params,
@@ -606,6 +613,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			'selected_index' => coalesce_key($params, 'selected_index', -1, FILTER_SANITIZE_NUMBER_INT),
 			'selected_values' => coalesce_key($params, 'selected_value', array()),
 			'flip_items' => coalesce_key($params, 'flip_items', false, FILTER_VALIDATE_BOOLEAN),
+			'assign' => coalesce_key($params, 'assign', '', FILTER_SANITIZE_STRING),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		
@@ -703,6 +711,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			'label' => coalesce_key($params, 'label', '', FILTER_SANITIZE_STRING),
 			'label_extra' => coalesce_key($params, 'label_extra', ''),
 			'in_between_text' => coalesce_key($params, 'in_between_text', ''),
+			'assign' => coalesce_key($params, 'assign', '', FILTER_SANITIZE_STRING),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		$default_params['id'] = coalesce_key($params,
