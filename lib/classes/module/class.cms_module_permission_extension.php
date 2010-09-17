@@ -60,10 +60,7 @@ class CmsModulePermissionExtension extends CmsModuleExtension
 	*/
 	public function remove($permission_name, $extra_attr = '')
 	{
-		if (!CmsAcl::delete_permission_definition($permission_name, $this->module->get_name()), $extra_attr )
-		{
-				return CmsAcl::delete_permission_definition($permission_name, 'Core', $extra_attr);
-		}
+		return CmsAcl::delete_permission_definition($permission_name, $this->module->get_name(), $extra_attr );
 	}
 }
 
