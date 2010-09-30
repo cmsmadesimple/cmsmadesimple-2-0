@@ -27,52 +27,43 @@
  * @since 2.0
  * @author Ted Kulp
  **/
-class CmsDateTime extends CmsObject
+class CmsDateTime extends DateTime
 {
-	private $datetime = null;
+	private $_date_time;
 
-	function __construct($curtime = 'now')
+	/*
+	function __construct($time = 'now', $time_zone = null)
 	{
-		if (is_int($curtime))
-			$curtime = strftime('%x %X', $curtime);
+		if (is_int($time) && $time > 100000)
+			$time = strftime('%x %X', $time);
 
-		try
-		{
-			$this->datetime = date_create($curtime);
-		}
-		catch (Exception $e)
-		{
-			$this->datetime = date_create('now');
-		}
+		return parent::__construct($time, $time_zone);
+	}
+	*/
+
+	function __sleep()
+	{
+		$this->_date_time = $this->format('c');
+		return array('_date_time');
+	}
+
+	function __wakeup()
+	{
+		$this->__construct($this->_date_time);
 	}
 	
+	/*
 	function __toString()
 	{
 		return $this->to_format_string();
 	}
-	
-	function modify($modify)
-	{
-		date_modify($this->datetime, $modify);
-	}
-	
-	function format($format)
-	{
-		try
-		{
-			return @date_format($this->datetime, $format);
-		}
-		catch (Exception $e)
-		{
-			return '';
-		}
-	}
+	*/
 	
 	function strftime($format)
 	{
 		try
 		{
-			return @strftime($format, $this->datetime->format('U'));
+			return @strftime($format, $this->format('U'));
 		}
 		catch (Exception $e)
 		{

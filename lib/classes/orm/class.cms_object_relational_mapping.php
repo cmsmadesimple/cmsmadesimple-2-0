@@ -1172,7 +1172,7 @@ abstract class CmsObjectRelationalMapping extends CmsObject implements ArrayAcce
 
 			if ($datetime)
 			{
-				$object->params[$k] = new CmsDateTime(cms_db()->UnixTimeStamp($v));
+				$object->params[$k] = new CmsDateTime(date('c', cms_db()->UnixTimeStamp($v)));
 			}
 			else if ($k == 'extra_params')
 			{
