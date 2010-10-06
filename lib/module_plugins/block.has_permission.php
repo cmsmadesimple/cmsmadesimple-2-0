@@ -35,7 +35,7 @@ function smarty_block_has_permission($params, $content, &$smarty, &$repeat)
 		foreach ($permissions as $oneperm)
 		{
 			$perm = explode("|",$oneperm);
-			if ( CmsAcl::check_permission($perm[0],CmsLogin::get_current_user(),$module->get_name()),isset($perm[1])?$perm[1]:'' )
+			if( CmsAcl::check_permission($perm[0],CmsLogin::get_current_user(),$module->get_name(),isset($perm[1])?$perm[1]:'') )
 			{
 				return; //Permission match user has rights
 			}

@@ -143,7 +143,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 
 		cmsms()->set('formcount', $form_count + 1);
 
-		if ($assign == '')
+		if ($assign != '')
 		{
 			cms_smarty()->assign($assign, $text);
 		}
@@ -168,7 +168,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 	public function form_end($params = array(), $check_keys = false)
 	{
 		$assign = coalesce_key($params, 'assign', '', FILTER_SANITIZE_STRING);
-		if (isset($assign)
+		if (isset($assign) )
 		{
 			cms_smarty()->assign($assign, end_tag('form'));
 		}
@@ -268,7 +268,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		
 		$text .= start_tag('input', $params, true, $extra);
 
-		if ($assign == '')
+		if ($assign != '')
 		{
 			cms_smarty()->assign($assign, $text);
 		}
@@ -335,7 +335,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		unset($params['extra']);
 
 
-		if ($assign == '')
+		if ($assign != '')
 		{
 			cms_smarty()->assign($assign, start_tag('input', $params, true, $extra));
 		}
@@ -407,7 +407,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		}
 		unset($params['extra']);
 		
-		if ($assign == '')
+		if ($assign != '')
 		{
 			cms_smarty()->assign($assign, start_tag('input', array('type' => 'hidden', 'name' => $params['name'], 'value' => '0'), true) . 
 			start_tag('input', $params, true, $extra) );
@@ -500,7 +500,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		unset($params['extra']);
 		unset($params['confirm_text']);
 		
-		if ($assign == '')
+		if ($assign != '')
 		{
 			cms_smarty()->assign($assign, start_tag('input', $params, true, $extra) );
 		}
@@ -576,7 +576,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		}
 		unset($params['extra']);
 		
-		if ($assign == '')
+		if ($assign != '')
 		{
 			cms_smarty()->assign($assign, start_tag('input', $params, true, $extra) );
 		}
@@ -667,7 +667,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 			$count++;
 		}
 		
-		if ($assign == '')
+		if ($assign != '')
 		{
 			cms_smarty()->assign($assign, $text);
 		}
@@ -762,7 +762,7 @@ class CmsModuleFormExtension extends CmsModuleExtension
 		
 		$text .= start_tag('textarea', $params, true, $extra) . $content . end_tag('textarea');
 		
-		if ($assign == '')
+		if ($assign != '')
 		{
 			cms_smarty()->assign($assign, $text);
 		}
