@@ -698,6 +698,19 @@ function save_page($params)
 					else
 					{
 						set_serialized_page($ajax, $page);
+						$smarty->assign_by_ref('page', $page);
+						$parent_path = '/';
+						if ($page->parent_id > 0)
+						{
+							$parent = cms_orm('CmsPage')->load($page->parent_id);
+							if ($parent)
+							{
+								$parent_path = "/{$parent->hierarchy_path}/";
+							}
+						}
+						$smarty->assign('parent_path', $parent_path);
+						$ajax->replace_html('#contentsummary', $smarty->fetch('listcontent-summary.tpl'));
+
 					}
 					$ajax->replace_html('#contentlist', display_content_list());
 					return $ajax->get_result();

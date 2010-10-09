@@ -1321,7 +1321,7 @@ abstract class CmsObjectRelationalMapping extends CmsObject implements ArrayAcce
 				}
 				else
 				{
-					return null;
+					return $this;
 				}
 			}
 		}
