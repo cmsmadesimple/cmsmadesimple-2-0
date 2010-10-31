@@ -738,22 +738,16 @@ function check_alias($params)
 	$page = get_serialized_page($params['serialized_page']);
 	$page->alias = $params['alias'];
 	
-	$count = cms_orm('CmsPage')->find_count(array('conditions' => array('content_alias = ? AND id <> ?', $params['alias'], $params['page_id'])));
-	if ($params['alias'] == '')
+	$result = CmsPage::validate_alias($params['alias'], $params['page_id']);
+	if ($result[0])
 	{
-		$ajax->replace_html('#alias_ok', 'Empty');
-		$ajax->script('$("#alias_ok").attr("style", "color: red;")');
-	}
-	else if ($count > 0 || $params['alias'] == '')
-	{
-		$ajax->replace_html('#alias_ok', 'Used');
-		$ajax->script('$("#alias_ok").attr("style", "color: red;")');
+		$ajax->script('$("#alias_ok").attr("style", "color: green;")');
 	}
 	else
 	{
-		$ajax->replace_html('#alias_ok', 'Ok');
-		$ajax->script('$("#alias_ok").attr("style", "color: green;")');
+		$ajax->script('$("#alias_ok").attr("style", "color: red;")');
 	}
+	$ajax->replace_html('#alias_ok', $result[1]);
 
 	set_serialized_page($ajax, $page);
 	//$ajax->script('reset_main_content();');
@@ -766,23 +760,16 @@ function check_url($params)
 	$page = get_serialized_page($params['serialized_page']);
 	$page->url_text = $params['alias'];
 	
-	$count = cms_orm('CmsPage')->find_count(array('conditions' => array('url_text = ? AND id != ? and parent_id = ?', $params['alias'], $params['page_id'], $params['parent_id'])));
-	if ($params['alias'] == '')
+	$result = CmsPage::validate_url($params['alias'], $params['page_id'], $params['parent_id']);
+	if ($result[0])
 	{
-		$ajax->replace_html('#url_text_ok', 'Empty');
-		$ajax->script('$("#url_text_ok").attr("style", "color: red;")');
-	}
-	else if ($count > 0 || $params['alias'] == '')
-	{
-		$ajax->replace_html('#url_text_ok', 'Used');
-		$ajax->script('$("#url_text_ok").attr("style", "color: red;")');
+		$ajax->script('$("#url_text_ok").attr("style", "color: green;")');
 	}
 	else
 	{
-		$ajax->replace_html('#url_text_ok', 'Ok');
-		$ajax->script('$("#url_text_ok").attr("style", "color: green;")');
+		$ajax->script('$("#url_text_ok").attr("style", "color: red;")');
 	}
-	
+	$ajax->replace_html('#url_text_ok', $result[1]);
 	set_serialized_page($ajax, $page);
 	//$ajax->script('reset_main_content();');
 	return $ajax->get_result();

@@ -184,10 +184,49 @@ class CmsPage extends CmsObjectRelationalMapping
 		$this->validate_numericality_of('parent_id',lang('invalidparent'));
 		//$this->validate_not_blank('name', lang('nofieldgiven %s',array(lang('title'))));
 		$this->validate_not_blank('menu_text', lang('nofieldgiven %s',array(lang('menutext'))));
-		$this->validate_not_blank('alias', lang('nofieldgiven %s',array(lang('alias'))));
-		$this->validate_not_blank('url_text', lang('nofieldgiven %s',array(lang('url_text'))));
+		$result = self::validate_alias($this->alias, $this->id);
+		if (!$result[0])  $this->add_validation_error($result[1]);
+		$result = self::validate_url($this->url_text, $this->id, $this->parent_id);
+		if (!$result[0])  $this->add_validation_error($result[1]);
+		
 	}
 	
+	static function validate_alias($alias, $id)
+	{
+		$count = cms_orm('CmsPage')->find_count(array('conditions' => array('content_alias = ? AND id <> ?', $alias, $id)));
+		if ($alias == '')
+		{
+			return array(false, lang('nofieldgiven %s',array(lang('alias'))));
+		}
+		else if ($count > 0)
+		{
+			return array(false, lang('%s is already used',array(lang('alias'))));
+		}
+		else
+		{
+			return array(true, lang('ok'));
+		}
+
+	}
+
+	static function validate_url($url_text, $id , $parent_id)
+	{
+		$count = cms_orm('CmsPage')->find_count(array('conditions' => array('url_text = ? AND id != ? and parent_id = ?', $url_text, $id, $parent_id)));
+		if ($url_text == '')
+		{
+			return array(false, lang('nofieldgiven %s',array(lang('url_text'))));
+		}
+		else if ($count > 0 )
+		{
+			return array(false, lang('%s is already used',array(lang('url_text'))));
+		}
+		else
+		{
+			return array(true, lang('ok'));
+		}
+
+	}
+ 
 	function friendly_hierarchy()
 	{
 		return CmsContentOperations::create_friendly_hierarchy_position($this->hierarchy());
