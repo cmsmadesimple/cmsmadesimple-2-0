@@ -17,8 +17,9 @@
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/simpletest/autorun.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/simpletest/web_tester.php');
 
-class CmsTestCase extends UnitTestCase
+class CmsWebTestCase extends WebTestCase
 {
 	private $_addons = null;
 	
