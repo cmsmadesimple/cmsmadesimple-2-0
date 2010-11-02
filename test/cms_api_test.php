@@ -1,9 +1,12 @@
 <?php
-require_once(dirname(__FILE__).'/simpletest/autorun.php');
-include_once(dirname(dirname(__FILE__)) . '/lib/cmsms.api.php');
 
-class CmsApiTest extends UnitTestCase
+class CmsApiTest extends CmsTestCase
 {
+	function __construct()
+	{
+		parent::__construct();
+	}
+	
 	public function setUp()
 	{
 		CmsCache::clear();
@@ -24,4 +27,3 @@ class CmsApiTest extends UnitTestCase
 		$this->assertEqual('', substr_match('1234567890', '12345678901', true));
 	}
 }
-?>
