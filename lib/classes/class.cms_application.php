@@ -156,6 +156,12 @@ class CmsApplication extends CmsObject
 	
 	function shutdown()
 	{
+		//Make sure this is absolutely the last thing -- gets around SimpleTest and other libs
+		register_shutdown_function(array(&$this, 'real_shutdown'));
+	}
+	
+	protected function real_shutdown()
+	{
 		CmsEventManager::send_event('Core:shutdown_soon');
 		CmsEventManager::send_event('Core:shutdown_now');
 	}
