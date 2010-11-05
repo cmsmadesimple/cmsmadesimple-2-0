@@ -198,8 +198,9 @@ class CmsDatabase extends CmsObject
 	}
 	
 	public static function create_table($table, $fields)
-	{	
-		$dbdict = NewDataDictionary(self::get_instance());
+	{
+		$instance = self::get_instance();
+		$dbdict = NewDataDictionary($instance);
 		$taboptarray = array('mysql' => 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
 
 		$sqlarray = $dbdict->CreateTableSQL(self::get_prefix().$table, $fields, $taboptarray);
@@ -211,8 +212,9 @@ class CmsDatabase extends CmsObject
 	}
 	
 	public static function create_index($table, $name, $field)
-	{	
-		$dbdict = NewDataDictionary(self::get_instance());
+	{
+		$instance = self::get_instance();
+		$dbdict = NewDataDictionary($instance);
 
 		$sqlarray = $dbdict->CreateIndexSQL($name, self::get_prefix().$table, $field);
 		$dbdict->ExecuteSQLArray($sqlarray);
@@ -220,7 +222,8 @@ class CmsDatabase extends CmsObject
 	
 	public static function drop_table($table)
 	{
-		$dbdict = NewDataDictionary(self::get_instance());
+		$instance = self::get_instance();
+		$dbdict = NewDataDictionary($instance);
 
 		$sqlarray = $dbdict->DropTableSQL(self::get_prefix().$table);
 		$dbdict->ExecuteSQLArray($sqlarray);
@@ -234,9 +237,9 @@ function adodb_outp($msg, $newline = true)
 	$msg = str_replace("\r\n", '', $msg);
 	$msg = str_replace("\r", '', $msg);
 	$msg = str_replace("\n", '', $msg);
-	$msg = html_entity_decode($msg, ENT_COMPAT, 'UTF-8');
+	$msg = html_entity_decode($msg);
 
-	CmsProfiler::get_instance()->mark($msg);
+	CmsProfiler::get_instance()->mark(trim($msg));
 }
 
 //TODO: Clean me up.  Globals?  Yuck!

@@ -1,6 +1,6 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 #CMS - CMS Made Simple
-#(c)2004-2008 by Ted Kulp (ted@cmsmadesimple.org)
+#(c)2004-2010 by Ted Kulp (ted@cmsmadesimple.org)
 #This project's homepage is: http://cmsmadesimple.org
 #
 #This program is free software; you can redistribute it and/or modify
@@ -16,14 +16,26 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-require_once(dirname(dirname(__FILE__)) . '/lib/cmsms.api.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/simpletest/autorun.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/simpletest/web_tester.php');
 
-class AllTests extends CmsTestSuite
+class CmsWebTestCase extends WebTestCase
 {
-	function __construct()
+	private $_addons = null;
+	
+	function __construct($label = false)
 	{
-		parent::__construct();
-		$this->collect(dirname(__FILE__), new SimplePatternCollector('/_test.php/'));
+		parent::__construct($label);
+		$this->_addons = new CmsTestCaseAddons($this);
+	}
+	
+	function __call($function_name, $args)
+	{
+		if (method_exists($this->_addons, $function_name))
+		{
+			return call_user_func_array(array($this->_addons, $function_name), $args);
+		}
+		return false;
 	}
 }
 

@@ -18,12 +18,11 @@
 
 require_once(dirname(dirname(__FILE__)) . '/lib/cmsms.api.php');
 
-class AllTests extends CmsTestSuite
+class CmsTestSuiteTest extends CmsTestCase
 {
-	function __construct()
+	public function testAddons()
 	{
-		parent::__construct();
-		$this->collect(dirname(__FILE__), new SimplePatternCollector('/_test.php/'));
+		$this->assertPattern('/^ADODB_/', get_class($this->get_database()));
 	}
 }
 

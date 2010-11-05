@@ -18,12 +18,12 @@
 
 require_once(dirname(dirname(__FILE__)) . '/lib/cmsms.api.php');
 
-class AllTests extends CmsTestSuite
+class CmsDatabaseTest extends CmsTestCase
 {
-	function __construct()
+	function testIsThisThingOn()
 	{
-		parent::__construct();
-		$this->collect(dirname(__FILE__), new SimplePatternCollector('/_test.php/'));
+		$db = $this->get_database(); //Just in case we need to change this for testing at some point
+		$this->assertTrue(count($db->GetAll("SHOW TABLES")) > 0);
 	}
 }
 
