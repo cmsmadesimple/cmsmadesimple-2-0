@@ -102,7 +102,9 @@ class CmsDateTime extends DateTime
 	 */
 	function to_sql_string()
 	{
-		return cms_db()->DBTimeStamp($this->timestamp());
+		//return cms_db()->DBTimeStamp($this->timestamp());
+		$pdo = CmsPdoDatabase::get_instance();
+		return $pdo->timestamp($this->timestamp());
 	}
 }
 
