@@ -18,48 +18,48 @@
 
 require_once(dirname(dirname(__FILE__)) . '/lib/cmsms.api.php');
 
-class CmsOrmTest extends CmsTestCase
+class CmsDataMapperTest extends CmsTestCase
 {
 	public function setUp()
 	{
 		$this->tearDown();
 		
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$test_orm->migrate();
 		
-		$test_orm_child = new TestOrmTableChild();
+		$test_orm_child = new TestDataMapperTableChild();
 		$test_orm_child->migrate();
 		
 		$pdo = CmsPdoDatabase::get_instance();
 		
-		$pdo->execute("INSERT INTO {test_orm_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test', 'blah', 5, 5.501, now() - 10, now() - 10)");
-		$pdo->execute("INSERT INTO {test_orm_table} (test_field, create_date, modified_date) VALUES ('test2', now(), now())");
-		$pdo->execute("INSERT INTO {test_orm_table} (test_field, create_date, modified_date) VALUES ('test3', now(), now())");
+		$pdo->execute("INSERT INTO {test_data_mapper_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test', 'blah', 5, 5.501, now() - 10, now() - 10)");
+		$pdo->execute("INSERT INTO {test_data_mapper_table} (test_field, create_date, modified_date) VALUES ('test2', now(), now())");
+		$pdo->execute("INSERT INTO {test_data_mapper_table} (test_field, create_date, modified_date) VALUES ('test3', now(), now())");
 		
-		$pdo->execute("INSERT INTO {test_orm_table_child} (parent_id, some_other_field, create_date, modified_date) VALUES (1, 'test', now(), now())");
+		$pdo->execute("INSERT INTO {test_data_mapper_table_child} (parent_id, some_other_field, create_date, modified_date) VALUES (1, 'test', now(), now())");
 	}
 	
 	public function tearDown()
 	{
 		$pdo = CmsPdoDatabase::get_instance();
 		
-		$pdo->drop_table('test_orm_table_child');
-		$pdo->drop_table('test_orm_table');
+		$pdo->drop_table('test_data_mapper_table_child');
+		$pdo->drop_table('test_data_mapper_table');
 		
 		CmsCache::clear();
 	}
 	
 	public function testGetTableShouldKnowFancyPrefixStuff()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		
-		$this->assertEqual(cms_db_prefix() . 'test_orm_table', $test_orm->get_table());
-		$this->assertEqual(cms_db_prefix() . 'test_orm_table.test_field', $test_orm->get_table('test_field'));
+		$this->assertEqual(cms_db_prefix() . 'test_data_mapper_table', $test_orm->get_table());
+		$this->assertEqual(cms_db_prefix() . 'test_data_mapper_table.test_field', $test_orm->get_table('test_field'));
 	}
 	
 	public function testFindAllShouldReturnAllRows()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->all()->execute();
 		
 		$this->assertIsA($result, 'array');
@@ -68,24 +68,24 @@ class CmsOrmTest extends CmsTestCase
 	
 	public function testFindOneShouldReturnOneRow()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		
 		$result = $test_orm->first()->execute();
-		$this->assertIsA($result, 'TestOrmTable');
+		$this->assertIsA($result, 'TestDataMapperTable');
 		$this->assertEqual(1, count($result));
 	}
 	
 	/*
 	public function testFindCountShouldReturnACountDuh()
 	{
-		$result = cms_orm('test_orm_table')->find_count();
+		$result = cms_orm('test_data_mapper_table')->find_count();
 		$this->assertEqual(3, $result);
 	}
 	*/
 	
 	public function testDateTimeShouldBeACmsDateTimeObject()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$this->assertNotA($result->test_field, 'CmsDateTime');
@@ -95,7 +95,7 @@ class CmsOrmTest extends CmsTestCase
 	
 	public function testOtherFieldsShouldBeString()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$this->assertIsA($result->test_field, 'string');
@@ -103,7 +103,7 @@ class CmsOrmTest extends CmsTestCase
 	
 	public function testAutoNumberingShouldWork()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$this->assertEqual(1, $result->id);
@@ -111,7 +111,7 @@ class CmsOrmTest extends CmsTestCase
 
 	public function testArrayAccessorsShouldWork()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$this->assertEqual(1, $result->id);
@@ -121,31 +121,31 @@ class CmsOrmTest extends CmsTestCase
 	/*
 	public function testDynamicFindersShouldRawk()
 	{
-		$result = cms_orm('test_orm_table')->find_all_by_test_field('test2');
+		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field('test2');
 		$this->assertEqual(1, count($result));
-		$result = cms_orm('test_orm_table')->find_all_by_test_field_or_another_test_field('test2', 'blah');
+		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field_or_another_test_field('test2', 'blah');
 		$this->assertEqual(2, count($result));
-		$result = cms_orm('test_orm_table')->find_all_by_test_field_and_another_test_field('test', 'blah');
+		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field_and_another_test_field('test', 'blah');
 		$this->assertEqual(1, count($result));
-		$result = cms_orm('test_orm_table')->find_all_by_test_field_and_another_test_field('test2', 'blah');
+		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field_and_another_test_field('test2', 'blah');
 		$this->assertEqual(0, count($result));
-		$result = cms_orm('test_orm_table')->find_by_test_field('test2');
+		$result = cms_orm('test_data_mapper_table')->find_by_test_field('test2');
 		$this->assertEqual(1, count($result));
-		$result = cms_orm('test_orm_table')->find_count_by_test_field('test2');
+		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field('test2');
 		$this->assertEqual(1, $result);
-		$result = cms_orm('test_orm_table')->find_count_by_test_field_or_another_test_field('test2', 'blah');
+		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field_or_another_test_field('test2', 'blah');
 		$this->assertEqual(2, $result);
-		$result = cms_orm('test_orm_table')->find_count_by_test_field_and_another_test_field('test', 'blah');
+		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field_and_another_test_field('test', 'blah');
 		$this->assertEqual(1, $result);
-		$result = cms_orm('test_orm_table')->find_count_by_test_field_and_another_test_field('test2', 'blah');
+		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field_and_another_test_field('test2', 'blah');
 		$this->assertEqual(0, $result);
 	}
 	
 	public function testFindByQueryShouldRawkAsWellJustNotQuiteAsHard()
 	{
-		$result = cms_orm('test_orm_table')->find_all_by_query("SELECT * FROM {test_orm_table} ORDER BY id ASC");
+		$result = cms_orm('test_data_mapper_table')->find_all_by_query("SELECT * FROM {test_data_mapper_table} ORDER BY id ASC");
 		$this->assertEqual(3, count($result));                                
-		$result = cms_orm('test_orm_table')->find_all_by_query("SELECT * FROM {test_orm_table} WHERE test_field = ? ORDER BY id ASC", array('test'));
+		$result = cms_orm('test_data_mapper_table')->find_all_by_query("SELECT * FROM {test_data_mapper_table} WHERE test_field = ? ORDER BY id ASC", array('test'));
 		$this->assertEqual(1, count($result));
 	}
 	*/
@@ -153,7 +153,7 @@ class CmsOrmTest extends CmsTestCase
 	public function testSaveShouldWorkAndBumpTimestampAndTheDirtyFlagShouldWork()
 	{
 		#Once without a change
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$old_timestamp = $result->modified_date->timestamp();
@@ -174,7 +174,7 @@ class CmsOrmTest extends CmsTestCase
 	
 	public function testHasParameterDoesItsThing()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$this->assertTrue($result->has_parameter('test_field'));
@@ -186,7 +186,7 @@ class CmsOrmTest extends CmsTestCase
 	
 	public function testValidatorWillNotAllowSaves()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$result->test_field = '';
@@ -200,7 +200,7 @@ class CmsOrmTest extends CmsTestCase
 	
 	public function testNumericalityOfValidatorShouldActuallyWork()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$result->some_int = '';  #We're testing numbers, not empty strings -- do another validation
@@ -220,7 +220,7 @@ class CmsOrmTest extends CmsTestCase
 	/*
 	public function testHasManyShouldWork()
 	{
-		$result = cms_orm('test_orm_table')->find_by_id(1);
+		$result = cms_orm('test_data_mapper_table')->find_by_id(1);
 		$this->assertNotNull($result);
 		$this->assertEqual(1, count($result->children));
 		$this->assertEqual('test', $result->children[0]->some_other_field);
@@ -228,7 +228,7 @@ class CmsOrmTest extends CmsTestCase
 	
 	public function testBelongsToShouldWorkAsWell()
 	{
-		$result = cms_orm('test_orm_table')->find_by_id(1);
+		$result = cms_orm('test_data_mapper_table')->find_by_id(1);
 		$this->assertNotNull($result);
 		$this->assertEqual(1, count($result->children));
 		$this->assertNotNull(count($result->children[0]->parent));
@@ -238,7 +238,7 @@ class CmsOrmTest extends CmsTestCase
 	
 	public function testDeleteShouldActuallyDelete()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->load(1);
 		
 		$this->assertNotNull($result);
@@ -249,18 +249,18 @@ class CmsOrmTest extends CmsTestCase
 	
 	public function testLoadCallbacksShouldGetCalled()
 	{
-		TestOrmTable::$static_counter = 0;
-		$test_orm = new TestOrmTable();
+		TestDataMapperTable::$static_counter = 0;
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$this->assertNotNull($result);
 		$this->assertEqual(1, $result->counter);
-		$this->assertEqual(1, TestOrmTable::$static_counter);
+		$this->assertEqual(1, TestDataMapperTable::$static_counter);
 	}
 	
 	public function testSaveCallbacksShouldGetCalled()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$this->assertNotNull($result);
@@ -278,7 +278,7 @@ class CmsOrmTest extends CmsTestCase
 	
 	public function testDeleteCallbacksShouldGetCalled()
 	{
-		$test_orm = new TestOrmTable();
+		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
 		$this->assertNotNull($result);
@@ -293,7 +293,7 @@ class CmsOrmTest extends CmsTestCase
 	
 }
 
-class TestOrmTable extends CmsDataMapper
+class TestDataMapperTable extends CmsDataMapper
 {
 	var $counter = 0;
 	static public $static_counter = 0;
@@ -332,7 +332,7 @@ class TestOrmTable extends CmsDataMapper
 
 	public function setup()
 	{
-		//$this->create_has_many_association('children', 'TestOrmTableChild', 'parent_id');
+		//$this->create_has_many_association('children', 'TestDataMapperTableChild', 'parent_id');
 		//$this->assign_acts_as('Versioned');
 	}
 
@@ -380,7 +380,7 @@ class TestOrmTable extends CmsDataMapper
 	}
 }
 
-class TestOrmTableChild extends CmsDataMapper
+class TestDataMapperTableChild extends CmsDataMapper
 {
 	var $_fields = array(
 		'id' => array(
@@ -408,7 +408,7 @@ class TestOrmTableChild extends CmsDataMapper
 	
 	public function setup()
 	{
-		//$this->create_belongs_to_association('parent', 'test_orm_table', 'parent_id');
+		//$this->create_belongs_to_association('parent', 'test_data_mapper_table', 'parent_id');
 	}
 }
 
