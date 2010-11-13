@@ -217,24 +217,25 @@ class CmsDataMapperTest extends CmsTestCase
 		$this->assertTrue($result->save());
 	}
 	
-	/*
 	public function testHasManyShouldWork()
 	{
-		$result = cms_orm('test_data_mapper_table')->find_by_id(1);
+		$test_orm = new TestDataMapperTable();
+		$result = $test_orm->load(1);
+		
 		$this->assertNotNull($result);
-		$this->assertEqual(1, count($result->children));
 		$this->assertEqual('test', $result->children[0]->some_other_field);
 	}
 	
 	public function testBelongsToShouldWorkAsWell()
 	{
-		$result = cms_orm('test_data_mapper_table')->find_by_id(1);
+		$test_orm = new TestDataMapperTable();
+		$result = $test_orm->load(1);
+		
 		$this->assertNotNull($result);
 		$this->assertEqual(1, count($result->children));
 		$this->assertNotNull(count($result->children[0]->parent));
 		$this->assertEqual(1, $result->children[0]->parent->id);
 	}
-	*/
 	
 	public function testDeleteShouldActuallyDelete()
 	{
@@ -328,6 +329,12 @@ class TestDataMapperTable extends CmsDataMapper
 		'modified_date' => array(
 			'type' => 'modified_date',
 		),
+		'children' => array(
+			'type' => 'association',
+			'association' => 'has_many',
+			'child_object' => 'TestDataMapperTableChild',
+			'foreign_key' => 'parent_id',
+		),
 	);
 
 	public function setup()
@@ -403,6 +410,12 @@ class TestDataMapperTableChild extends CmsDataMapper
 		),
 		'modified_date' => array(
 			'type' => 'modified_date',
+		),
+		'parent' => array(
+			'type' => 'association',
+			'association' => 'belongs_to',
+			'parent_object' => 'testDataMapperTable',
+			'foreign_key' => 'parent_id',
 		),
 	);
 	

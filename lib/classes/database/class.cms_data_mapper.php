@@ -27,6 +27,7 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 	
 	protected $_fields = array();
 	protected $_acts_as = array();
+	protected $_associations = null; //For caching
 	protected $dirty = false;
 	
 	/**
@@ -65,17 +66,24 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 		if (array_key_exists($n, $this->params))
 		{
 			if (method_exists($this, 'get_' . $n))
+			{
 				return call_user_func_array(array($this, 'get_'.$n), array());
+			}
 			else
+			{
 				return $this->params[$n];
+			}
 		}
 		
-		/*
-		if (cms_orm()->has_association($this, $n))
+		$assoc = $this->get_associations();
+		
+		if (array_key_exists($n, $assoc))
 		{
-			return cms_orm()->process_association($this, $n);
+			if ($assoc[$n] != null)
+				return $assoc[$n]->get_data();
+			else
+				return $this->fill_association($n)->get_data();
 		}
-		*/
 	}
 	
 	/**
@@ -146,6 +154,42 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 	public function get_type_field()
 	{
 		return $this->_type_field;
+	}
+	
+	public function get_associations()
+	{
+		if ($this->_associations !== null)
+			return $this->_associations;
+		
+		$this->_associations = array();
+		foreach ($this->_fields as $k => $v)
+		{
+			if ($v['type'] == 'association' && isset($v['association']))
+			{
+				$this->_associations[$k] = null;
+			}
+		}
+		
+		return $this->_associations;
+	}
+	
+	public function fill_association($name)
+	{
+		$assoc = $this->get_associations();
+		
+		if (array_key_exists($name, $assoc))
+		{
+			if ($assoc[$name] != null) //Already filled in
+			{
+				return $assoc[$name];
+			}
+			else
+			{
+				$class_name = camelize('cms_' . $this->_fields[$name]['association']);
+				$this->_associations[$name] = new $class_name($this, $this->_fields[$name]);
+				return $this->_associations[$name];
+			}
+		}
 	}
 	
 	/**
