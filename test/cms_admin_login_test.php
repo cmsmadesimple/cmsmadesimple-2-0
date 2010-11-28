@@ -89,7 +89,6 @@ class CmsAdminLoginTest extends CmsWebTestCase
 		$this->setField('password', $user->decoded_password);
 		
 		$this->click('Submit');
-		var_dump($this->getUrl());
 		$this->assertEqual($base . '/index.php', $this->getUrl());
 	}
 }

@@ -876,7 +876,7 @@ abstract class CmsObjectRelationalMapping extends CmsObject implements ArrayAcce
 					{
 						if ($this->params[$localname] instanceof CmsDateTime)
 						{
-							$midpart .= "{$table}.{$onefield} = " . $this->params[$localname]->to_sql_string() . ", ";
+							$midpart .= "{$table}.{$onefield} = '" . $this->params[$localname]->to_sql_string() . "', ";
 						}
 						else
 						{
