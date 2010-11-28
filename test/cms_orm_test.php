@@ -267,6 +267,7 @@ class CmsOrmTest extends CmsTestCase
 		$this->assertEqual(2, count($result));
 	}
 	
+	/*
 	public function testBadTransactionsShouldFail()
 	{
 		$db = cms_db();
@@ -294,6 +295,7 @@ class CmsOrmTest extends CmsTestCase
 			$this->assertNotNull(cms_orm('test_orm_table')->find_by_test_field('test good'));
 		}
 	}
+	*/
 	
 }
 

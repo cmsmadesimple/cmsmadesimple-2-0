@@ -22,7 +22,7 @@ class CmsTestSuiteTest extends CmsTestCase
 {
 	public function testAddons()
 	{
-		$this->assertPattern('/^ADODB_/', get_class($this->get_database()));
+		//$this->assertPattern('/^ADODB_/', get_class($this->get_database()));
 	}
 }
 
