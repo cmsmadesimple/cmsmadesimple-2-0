@@ -57,7 +57,7 @@ abstract class CmsPdoDatabase extends PDO
 			try
 			{
 				$class = 'CmsPdoMysqlDatabase';
-				$attrs = $attrs + $class::get_connection_attributes(); //Add driver specific attributes
+				$attrs = $attrs + call_user_func_array($class.'::get_connection_attributes', array()); //Add driver specific attributes
 				self::$instance = new $class($conn_string, $config['db_username'], $config['db_password'], $attrs);
 				self::$instance->_database_name = $config['db_name'];
 			}
@@ -69,6 +69,24 @@ abstract class CmsPdoDatabase extends PDO
 		return self::$instance;
 	}
 	
+    public function __call($function, $arguments) {
+        //echo "Calling object method '$function'";debug_display($arguments);
+		$ado_db = CmsDatabase::get_instance();
+		if (method_exists($ado_db, $function))
+		{
+			return call_user_func_array(array($ado_db, $function), $arguments);
+		}
+    }
+
+    /**  As of PHP 5.3.0  */
+    public static function __callStatic($function, $arguments) {
+        //echo "Calling static method '$function' ". implode(', ', $arguments). "<br />";
+		if (method_exists('CmsDatabase', $function))
+		{
+			return call_user_func_array('CmsDatabase::'.$function, $arguments);
+		}
+    }
+
 	public function query($query, $add_prefix = true)
 	{
 		$query = $add_prefix ? $this->add_prefix_to_query($query) : $query;
@@ -81,7 +99,7 @@ abstract class CmsPdoDatabase extends PDO
 		return parent::prepare($query, $driver_options);
 	}
 	
-	public function execute($query, $input_parameters = array(), $driver_options = array())
+	public function execute_sql($query, $input_parameters = array(), $driver_options = array())
 	{
 		$this->log_query($query, $input_parameters);
 		$handle = $this->prepare($query, $driver_options);

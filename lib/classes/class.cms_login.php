@@ -258,6 +258,7 @@ class CmsLogin extends CmsObject
 	
 	/**
 	 * Old method of getting the userid of the currently logged in user.
+
 	 *
 	 * @return CmsUser If they're logged in, the user id.  If not logged in, null.
 	 * @since 0.1

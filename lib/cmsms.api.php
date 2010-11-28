@@ -201,7 +201,7 @@ function cms_response()
  */
 function cms_db()
 {
-	return CmsDatabase::get_instance();
+	return CmsPdoDatabase::get_instance();
 }
 
 function cms_config()

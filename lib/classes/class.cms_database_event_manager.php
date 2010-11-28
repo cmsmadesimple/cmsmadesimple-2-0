@@ -25,7 +25,8 @@ class CmsDatabaseEventManager extends CmsObject
 	
 	public static function load_events_into_manager()
 	{
-		$result = cms_db()->Execute("SELECT h.tag_name, h.module_name, e.originator, e.event_name FROM {event_handlers} h INNER JOIN {events} e ON e.event_id = h.event_id ORDER BY e.originator, e.event_name, h.handler_order");
+		$db = CmsDatabase::get_instance();
+		$result = $db->Execute("SELECT h.tag_name, h.module_name, e.originator, e.event_name FROM {event_handlers} h INNER JOIN {events} e ON e.event_id = h.event_id ORDER BY e.originator, e.event_name, h.handler_order");
 		while ($result && $row = $result->FetchRow())
 		{
 			$event_name = $row['originator'] . ':' . $row['event_name'];
