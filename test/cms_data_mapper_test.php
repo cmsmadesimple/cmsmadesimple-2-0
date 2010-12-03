@@ -291,12 +291,35 @@ class CmsDataMapperTest extends CmsTestCase
 		$result = $test_orm->all()->execute();
 		$this->assertEqual(2, count($result));
 	}
+
+	public function testBasicActsAsShouldWorkWithBeforeLoad()
+	{
+		$test_orm = new TestDataMapperTable();
+		$result = $test_orm->first()->execute();
+
+		$this->assertNotNull($result);
+		$this->assertEqual(1, $result->ext_counter);
+	}
+
+	public function testBasicActsAsShouldAllowMethodCalls()
+	{
+		$test_orm = new TestDataMapperTable();
+		$result = $test_orm->first()->execute();
+
+		$this->assertNotNull($result);
+		$result->test_me();
+		$result->test_me();
+
+		//It's 3 because before_load still fires
+		$this->assertEqual(3, $result->ext_counter);
+	}
 	
 }
 
 class TestDataMapperTable extends CmsDataMapper
 {
 	var $counter = 0;
+	var $ext_counter = 0;
 	static public $static_counter = 0;
 	
 	var $_fields = array(
@@ -335,6 +358,10 @@ class TestDataMapperTable extends CmsDataMapper
 			'child_object' => 'TestDataMapperTableChild',
 			'foreign_key' => 'parent_id',
 		),
+	);
+
+	var $_acts_as = array(
+		'ActsAsUnitTest',
 	);
 
 	public function setup()
@@ -422,6 +449,24 @@ class TestDataMapperTableChild extends CmsDataMapper
 	public function setup()
 	{
 		//$this->create_belongs_to_association('parent', 'test_data_mapper_table', 'parent_id');
+	}
+}
+
+class ActsAsUnitTest extends CmsActsAs
+{
+	function __construct()
+	{
+		parent::__construct();
+	}
+	
+	public function after_load(&$obj)
+	{
+		$obj->ext_counter++;
+	}
+	
+	public function test_me(&$obj)
+	{
+		$obj->ext_counter++;
 	}
 }
 
