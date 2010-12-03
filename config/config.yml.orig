@@ -1,0 +1,18 @@
+#Database details
+database:
+  dsn: mysql://root:@localhost/cms_silk
+  prefix: cms_
+
+#Should we be in debug mode?
+debug: false
+
+#Places to look for classes when autoloading
+#(app/models will be autoloaded later on)
+class_autoload:
+  - lib/cmsms/classes
+
+smarty_plugins:
+  - lib/cmsms/plugins
+
+smarty_class: CmsSmarty
+
