@@ -27,6 +27,7 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 	
 	protected $_fields = array();
 	protected $_acts_as = array();
+	protected $_acts_as_obj = array();
 	protected $_associations = null; //For caching
 	protected $dirty = false;
 	
@@ -47,10 +48,19 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 		
 		$this->setup(true);
 		
-		//Run the setup methods for any acts_as classes attached
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		//Fill in and run the setup methods for any acts_as classes
+		//attached
+		if (is_array($this->_acts_as))
 		{
-			$one_acts_as->setup($this);
+			foreach ($this->_acts_as as $one_class)
+			{
+				if (!array_key_exists($one_class, $this->_acts_as_obj) && class_exists($one_class))
+				{
+					$the_class = new $one_class();
+					$the_class->setup($this);
+					$this->_acts_as_obj[$one_class] = $the_class;
+				}
+			}
 		}
 	}
 	
@@ -126,12 +136,11 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 		else
 		{
 			//It's possible an acts_as class has this method
-			/*
-			$acts_as_list = cms_orm()->get_acts_as($this);
+			$acts_as_list = $this->_acts_as_obj;
 			if (count($acts_as_list) > 0)
 			{
 				$arguments = array_merge(array(&$this), $arguments);
-				foreach ($acts_as_list as $one_acts_as)
+				foreach ($acts_as_list as $k => $one_acts_as)
 				{
 					if (method_exists($one_acts_as, $function))
 					{
@@ -139,7 +148,6 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 					}
 				}
 			}
-			*/
 
 			#This handles the SomeParam() dynamic function calls
 			return $this->__get($function_converted);
@@ -697,7 +705,7 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 	 */
 	public function before_load_caller($type, $fields)
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach ($this->_acts_as_obj as $one_acts_as)
 		{
 			$one_acts_as->before_load($type, $fields);
 		}
@@ -725,12 +733,10 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 	 */
 	public function after_load_caller()
 	{
-		/*
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach ($this->_acts_as_obj as $one_acts_as)
 		{
 			$one_acts_as->after_load($this);
 		}
-		*/
 		$this->after_load();
 	}
 	
@@ -755,7 +761,7 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 	 */
 	protected function before_validation_caller()
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach ($this->_acts_as_obj as $one_acts_as)
 		{
 			$one_acts_as->before_validation($this);
 		}
@@ -784,7 +790,7 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 	 */
 	protected function before_save_caller()
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach ($this->_acts_as_obj as $one_acts_as)
 		{
 			$one_acts_as->before_save($this);
 		}
@@ -811,7 +817,7 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 	 */
 	protected function after_save_caller(&$result)
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach ($this->_acts_as_obj as $one_acts_as)
 		{
 			$one_acts_as->after_save($this, $result);
 		}
@@ -839,7 +845,7 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 	 */
 	protected function before_delete_caller()
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach ($this->_acts_as_obj as $one_acts_as)
 		{
 			$res = $one_acts_as->before_delete($this);
 			if( !$res ) return false;
@@ -868,7 +874,7 @@ abstract class CmsDataMapper extends CmsObject implements ArrayAccess
 	 */
 	protected function after_delete_caller()
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach ($this->_acts_as_obj as $one_acts_as)
 		{
 			$one_acts_as->after_delete($this);
 		}
