@@ -2,3 +2,5 @@ lib/silk
 config/giternal.yml
 config/config.yml
 tmp/*
+index.php
+silk.php
