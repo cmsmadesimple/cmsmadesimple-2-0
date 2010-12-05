@@ -33,14 +33,14 @@ namespace \cmsms\core;
 class Application extends \silk\core\Application
 {
 	/**
-	 * Variables object - various objects and strings needing to be passed 
-	 */
-	var $variables;
-
-	/**
 	 * Modules object - holds references to all registered modules
 	 */
 	var $cmsmodules;
+
+	/**
+	 * Site Preferences object - holds all current site preferences so they're only loaded once
+	 */
+	private static $siteprefs = array();
 
 	/**
 	 * System Modules - a list (hardcoded) of all system modules
@@ -63,19 +63,9 @@ class Application extends \silk\core\Application
 	var $bbcodeparser;
 
 	/**
-	 * Site Preferences object - holds all current site preferences so they're only loaded once
-	 */
-	static private $siteprefs = array();
-
-	/**
 	 * User Preferences object - holds user preferences as they're loaded so they're only loaded once
 	 */
 	var $userprefs;
-
-	/**
-	 * Internal error array - So functions/modules can store up debug info and spit it all out at once
-	 */
-	var $errors;
 
 	/**
      * template cache array - If something's called LoadTemplateByID, we keep a copy around
@@ -101,22 +91,14 @@ class Application extends \silk\core\Application
 	 * block types array - List of available block types
 	 */
 	var $blocktypes;
-	
-	var $ormclasses;
 
 	var $hrinstance;
-	
-	var $params = array();
 	
 	var $modules;
 	
 	var $StylesheeteCache;
 	
 	var $userpluginfunctions;
-	
-	var $orm;
-	
-	static private $instance = NULL;
 
 	/**
 	 * Constructor
@@ -127,7 +109,6 @@ class Application extends \silk\core\Application
 
 		$this->cmssystemmodules = array( 'nuSOAP', 'MenuManager', 'ModuleManager' );
 		$this->modules = array();
-		$this->errors = array();
 		$this->nls = array();
 		$this->contenttypes = array();
 		$this->blocktypes = array();
@@ -135,7 +116,6 @@ class Application extends \silk\core\Application
 		$this->StylesheetCache = array();
 		$this->variables['content-type'] = 'text/html';
 		$this->variables['modulenum'] = 1;
-		$this->variables['routes'] = array();
 		$this->variables['pluginnum'] = 1;
 		
 		#Setup hash for storing all modules and plugins
@@ -144,24 +124,6 @@ class Application extends \silk\core\Application
 		$this->userplugins         = array();
 		$this->userpluginfunctions = array();
 		$this->cmsplugins          = array();
-		$this->orm                 = array();
-	}
-	
-	/**
-	 * Returns an instnace of the CmsApplication singleton.  Most 
-	 * people can generally use cmsms() instead of this, but they 
-	 * both do the same thing.
-	 *
-	 * @return CmsApplication The singleton CmsApplication instance
-	 * @author Ted Kulp
-	 **/
-	static public function get_instance()
-	{
-		if (self::$instance == NULL)
-		{
-			self::$instance = new CmsApplication();
-		}
-		return self::$instance;
 	}
 
 	/**
@@ -180,16 +142,6 @@ class Application extends \silk\core\Application
 		return CmsDatabase::get_instance();
 	}
 	
-	function get($name)
-	{
-		return $this->variables[$name];
-	}
-	
-	function set($name, $value)
-	{
-		$this->variables[$name] = $value;
-	}
-	
 	/**
 	 * Getter overload method.  Called when an $obj->field and field
 	 * does not exist in the object's variable list.  In this case,
@@ -206,22 +158,8 @@ class Application extends \silk\core\Application
 			return CmsConfig::get_instance();
 		else if ($name == 'db')
 			return CmsDatabase::get_instance();
-		else if ($name == 'smarty')
-			return CmsSmarty::get_instance();
 		else
-			return cms_orm()->get_orm_class($name);
-	}
-	
-	/**
-	 * Retrieves an instance of an ORM'd object for doing
-	 * find_by_* methods.
-	 *
-	 * @return mixed The object with the given name, or null if it's not registered
-	 * @author Ted Kulp
-	 **/
-	function get_orm_class($name, $try_prefix = true)
-	{
-		return cms_orm()->get_orm_class($name, $try_prefix);
+			return parent::__get($name);
 	}
 	
 	/**
@@ -349,7 +287,7 @@ class Application extends \silk\core\Application
 		
 		$result = array();
 
-		$query = "SELECT sitepref_name, sitepref_value from ".cms_db_prefix()."siteprefs";
+		$query = "SELECT sitepref_name, sitepref_value from {siteprefs}";
 		$dbresult = &$db->Execute($query);
 
 		while ($dbresult && !$dbresult->EOF)
@@ -394,7 +332,7 @@ class Application extends \silk\core\Application
 	{
 		$db = cms_db();
 
-		$query = "DELETE from ".cms_db_prefix()."siteprefs WHERE sitepref_name = ?";
+		$query = "DELETE from {siteprefs} WHERE sitepref_name = ?";
 		$result = $db->Execute($query, array($prefname));
 
 		if (isset(self::$siteprefs[$prefname]))
@@ -417,7 +355,7 @@ class Application extends \silk\core\Application
 
 		$db = cms_db();
 
-		$query = "SELECT sitepref_value from ".cms_db_prefix()."siteprefs WHERE sitepref_name = ".$db->qstr($prefname);
+		$query = "SELECT sitepref_value from {siteprefs} WHERE sitepref_name = ".$db->qstr($prefname);
 		$result = $db->Execute($query);
 
 		if ($result && $result->RecordCount() > 0)
@@ -429,22 +367,16 @@ class Application extends \silk\core\Application
 
 		if ($doinsert)
 		{
-			$query = "INSERT INTO ".cms_db_prefix()."siteprefs (sitepref_name, sitepref_value) VALUES (".$db->qstr($prefname).", ".$db->qstr($value).")";
+			$query = "INSERT INTO {siteprefs} (sitepref_name, sitepref_value) VALUES (".$db->qstr($prefname).", ".$db->qstr($value).")";
 			$db->Execute($query);
 		}
 		else
 		{
-			$query = "UPDATE ".cms_db_prefix()."siteprefs SET sitepref_value = ".$db->qstr($value)." WHERE sitepref_name = ".$db->qstr($prefname);
+			$query = "UPDATE {siteprefs} SET sitepref_value = ".$db->qstr($value)." WHERE sitepref_name = ".$db->qstr($prefname);
 			$db->Execute($query);
 		}
 		self::$siteprefs[$prefname] = $value;
 		CmsCache::clear();
-	}
-
-	function __destruct()
-	{
-		//*cough* Hack
-		CmsDatabase::close();
 	}
 }
 
@@ -461,4 +393,3 @@ class CmsBlockTypePlaceholder extends CmsContentTypePlaceholder
 }
 
 # vim:ts=4 sw=4 noet
-?>
