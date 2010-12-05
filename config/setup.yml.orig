@@ -1,6 +1,9 @@
 #Database details
 database:
   dsn: mysql://root:@localhost/cms_silk
+  pdo_dsn: mysql:host=localhost;dbname=cms_silk
+  username: root
+  password: 
   prefix: cms_
 
 #Should we be in debug mode?

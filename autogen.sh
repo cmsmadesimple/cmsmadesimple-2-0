@@ -16,8 +16,8 @@ chmod 777 tmp/templates_c > /dev/null 2>&1
 
 #Copy .orig files to their proper places, if they don't
 #exist
-if [ ! -f "config/config.yml" ]; then
-	cp config/config.yml.orig config/config.yml > /dev/null 2>&1
+if [ ! -f "config/setup.yml" ]; then
+	cp config/setup.yml.orig config/setup.yml > /dev/null 2>&1
 fi
 
 #Copy index.php here.  Will copy it no matter what, in case it

@@ -1,6 +1,6 @@
 lib/silk
 config/giternal.yml
-config/config.yml
+config/setup.yml
 tmp/*
 index.php
 silk.php
