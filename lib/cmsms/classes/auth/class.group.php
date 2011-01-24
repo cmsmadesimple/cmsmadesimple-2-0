@@ -58,7 +58,6 @@ class Group extends DataMapper
 		'extra_params' => array(
 			'type' => 'text'
 		),
-		/*
 		'user_groups' => array(
 			'type' => 'table',
 			'fields' => array(
@@ -73,14 +72,13 @@ class Group extends DataMapper
 				),
 				'modified_date' => array(
 					'type' => 'modified_date'
-				)
-			)
+				),
+			),
 		),
 		'users' => array(
 			'type' => 'association',
 			'association' => 'has_and_belongs_to_many'
 		),
-		 */
 	);
 	
 	public function __construct()

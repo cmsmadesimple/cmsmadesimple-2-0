@@ -76,16 +76,16 @@ class User extends DataMapper
 		'extra_params' => array(
 			'type' => 'text'
 		),
-		/*
 		'groups' => array(
 			'type' => 'association',
 			'association' => 'has_and_belongs_to_many'
 		),
+		/*
 		'bookmarks' => array(
 			'type' => 'association',
 			'association' => 'has_many'
 		),
-		 */
+		*/
 	);
 	
 	public function __construct()
@@ -95,7 +95,7 @@ class User extends DataMapper
 
 	public function validate()
 	{
-		$this->validate_not_blank('name', lang('nofieldgiven',array(lang('username'))));
+		$this->validate_not_blank('username', __('nofieldgiven',array('username')));
 		
 		// Username validation
 		if ($this->name != '')
@@ -106,14 +106,14 @@ class User extends DataMapper
 			{
 				if ($result->id != $this->id)
 				{
-					$this->add_validation_error(lang('The username is already in use'));
+					$this->add_validation_error(__('The username is already in use'));
 				}
 			}
 			
 			// Make sure the name has no illegal characters
 			if ( !preg_match("/^[a-zA-Z0-9\.]+$/", $this->name) ) 
 			{
-				$this->add_validation_error(lang('illegalcharacters', array(lang('username'))));
+				$this->add_validation_error(__('illegalcharacters', array(__('username'))));
 			} 
 
 			// Make sure the name is a valid length
@@ -122,7 +122,7 @@ class User extends DataMapper
 			{
 				if( strlen($this->name) < $this->min_username_length )
 				{
-					$this->add_validation_error(lang('The username is too short'));
+					$this->add_validation_error(__('The username is too short'));
 				}
 			}
 
@@ -133,7 +133,7 @@ class User extends DataMapper
 			{
 				if( strlen($this->clear_password) < $this->min_password_length )
 				{
-					$this->add_validation_error(lang('The password is too short'));
+					$this->add_validation_error(__('The password is too short'));
 				}
 			}
 
@@ -145,7 +145,7 @@ class User extends DataMapper
 			{
 				if( $this->clear_repeat_password != $this->clear_password )
 				{
-					$this->add_validation_error(lang('The passwords do not match'));
+					$this->add_validation_error(__('The passwords do not match'));
 				}
 			}
 		}
@@ -156,41 +156,51 @@ class User extends DataMapper
 		/*
 		$this->create_has_many_association('bookmarks', 'bookmark', 'user_id');
 		$this->create_has_and_belongs_to_many_association('groups', 'group', 'user_groups', 'group_id', 'user_id');
-		 */
+		*/
+	}
+
+	/**
+	 * Checks the password of the user
+	 *
+	 * @param string The password to check
+	 * @return bool If the password is correct
+	 */
+	public function check_password($password)
+	{
+		return md5($password) == $this->params['password'];
 	}
 
 	/**
 	 * Encrypts and sets password for the User
 	 *
 	 * @param string The password to encrypt and set for the user
-	 *
-	 * @since 0.6.1
 	 */
 	public function set_password($password)
 	{
 		//Set params directly so that we don't get caught in a loop
 		$this->params['password'] = md5($password);
+		$this->dirty = true;
 	}
 	
 	//Callback handlers
 	protected function before_save()
 	{
-		CmsEvents::send_event( 'Core', ($this->id == -1 ? 'AddUserPre' : 'EditUserPre'), array('user' => &$this));
+		//CmsEvents::send_event( 'Core', ($this->id == -1 ? 'AddUserPre' : 'EditUserPre'), array('user' => &$this));
 	}
 	
 	protected function after_save()
 	{
-		CmsEvents::send_event( 'Core', ($this->create_date == $this->modified_date ? 'AddUserPost' : 'EditUserPost'), array('user' => &$this));
+		//CmsEvents::send_event( 'Core', ($this->create_date == $this->modified_date ? 'AddUserPost' : 'EditUserPost'), array('user' => &$this));
 	}
 	
 	protected function before_delete()
 	{
-		CmsEvents::send_event('Core', 'DeleteUserPre', array('user' => &$this));
+		//CmsEvents::send_event('Core', 'DeleteUserPre', array('user' => &$this));
 	}
 	
 	protected function after_delete()
 	{
-		CmsEvents::send_event('Core', 'DeleteUserPost', array('user' => &$this));
+		//CmsEvents::send_event('Core', 'DeleteUserPost', array('user' => &$this));
 	}
 	
 	public function is_anonymous()

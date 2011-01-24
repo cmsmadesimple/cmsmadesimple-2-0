@@ -21,44 +21,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-//require_once(dirname(dirname(__FILE__)) . '/silk.api.php');
+use \silk\test\TestFixture;
 
-use \silk\test\TestCase;
-use \silk\database\Database;
-use \silk\performance\Cache;
-use \cmsms\auth\User;
-
-class UserTest extends TestCase
+class UserFixture extends TestFixture
 {
-	var $_fixtures = array('user');
+	var $model = '\cmsms\auth\User';
+	var $records = array(
+		array(
+			'id' => 1,
+			'username' => 'testuser',
+			'password' => '',
+			'first_name' => 'Test',
+			'last_name' => 'User',
+			'email' => 'test@test.com',
+			'active' => true,
+			'create_date' => '2010-01-01 15:00:00',
+			'modified_date' => '2010-01-01 15:00:00',
+		),
+		array(
+			'id' => 2,
+			'username' => 'anotheruser',
+			'password' => '',
+			'first_name' => 'Another',
+			'last_name' => 'User',
+			'email' => 'test@another.net',
+			'active' => false,
+			'create_date' => '2010-01-01 15:00:00',
+			'modified_date' => '2010-01-01 15:00:00',
+		),
+	);
 
-	public function testAllUsersCanBeFound()
+	function __construct()
 	{
-		$user = new User();
-		$users = $user->all()->order(array('id' => 'ASC'))->execute();
-		$this->assertEquals(2, count($users));
-		$this->assertEquals('Test', $users[0]->first_name);
-		$this->assertEquals('User', $users[0]->last_name);
-	}
-
-	public function testUserPasswordCheck()
-	{
-		$user = new User();
-		$user = $user->first()->execute();
-		$this->assertNotNull($user);
-		$this->assertFalse($user->check_password('blahblah'));
-		$this->assertTrue($user->check_password('test'));
-	}
-
-	public function testUserPasswordSet()
-	{
-		$user = new User();
-		$user = $user->first()->execute();
-		$user->set_password('thing');
-		$this->assertTrue($user->save());
-		$user = $user->first()->execute();
-		$this->assertFalse($user->check_password('test'));
-		$this->assertTrue($user->check_password('thing'));
+		parent::__construct();
+		$this->records[0]['password'] = md5('test');
+		$this->records[1]['password'] = md5('blahblah');
 	}
 }
 
