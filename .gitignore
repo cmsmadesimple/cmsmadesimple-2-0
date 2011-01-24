@@ -4,3 +4,4 @@ config/setup.yml
 tmp/*
 index.php
 silk.php
+extensions/auth

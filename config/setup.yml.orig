@@ -17,5 +17,8 @@ class_autoload:
 smarty_plugins:
   - lib/cmsms/plugins
 
-smarty_class: CmsSmarty
+auto_migrate:
+  \cmsms\auth\Group : lib/cmsms/classes/auth/class.group.php
+  \cmsms\auth\User : lib/cmsms/classes/auth/class.user.php
 
+#smarty_class: CmsSmarty
